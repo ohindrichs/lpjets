@@ -90,12 +90,13 @@ class TH2DCollection
 //Sort
 double getThetaStar(TLorentzVector Z1, TLorentzVector Z2);
 
-bool tlvsortpt(const TLorentzVector& JA, const TLorentzVector& JB);
-bool tlvsortetaabs(const TLorentzVector& JA, const TLorentzVector& JB);
+template<typename T> bool sortpt(const T* A, const T* B) {return A->Pt() >  B->Pt();};
+//bool tlvsortpt(const TLorentzVector& JA, const TLorentzVector& JB);
+//bool tlvsortetaabs(const TLorentzVector& JA, const TLorentzVector& JB);
 
-bool ptlvsortpt(const TLorentzVector* JA, const TLorentzVector* JB);
-bool ptlvsortetaabs(const TLorentzVector* JA, const TLorentzVector* JB);
-bool ptlvsorteta(const TLorentzVector* JA, const TLorentzVector* JB);
+//bool ptlvsortpt(const TLorentzVector* JA, const TLorentzVector* JB);
+//bool ptlvsortetaabs(const TLorentzVector* JA, const TLorentzVector* JB);
+//bool ptlvsorteta(const TLorentzVector* JA, const TLorentzVector* JB);
 
 
 //BINNER

@@ -132,6 +132,7 @@ class ttbar : public AnalyzerBase
 		//configuration
 		bool PDFTEST;
 		bool PSEUDOTOP;
+		bool LHCPS;
 		bool BTAGMODE;
 		bool JETSCALEMODE;
 		bool MUONS;
@@ -159,6 +160,8 @@ class ttbar : public AnalyzerBase
 		double cpjetsep;
 		double csigmajet;
 		string cjecuncertainty;
+		string cBTaggingSF;
+		string cBTaggingEff;
 		int cjetres;
 		double csigmamet;
 		double ctopptweight;

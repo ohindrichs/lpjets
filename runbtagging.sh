@@ -1,7 +1,7 @@
 #!/bin/bash
-JOBDIR=JOB13
-TYP=JOBS13_btagging
-VER=V79
+JOBDIR=JOB14
+TYP=JOBS14_btagging
+VER=V1
 
 cp ttbarxsec.cfg ttbarxsec.tmp
 

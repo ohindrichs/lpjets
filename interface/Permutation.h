@@ -32,7 +32,7 @@ class Permutation
 		TLorentzVector* bjl_ = 0;
 		TLorentzVector* lep_ = 0;
 		int lpdgid_ = 0;
-		IDMet* met_ = 0;
+		TLorentzVector* met_ = 0;
 		bool calculated = false;
 		TLorentzVector nu_;
 		TLorentzVector whad_;
@@ -68,42 +68,8 @@ class Permutation
 			calculated = false;
 		}
 		Permutation() : nu_(0.,0.,0.,-1.){}
-		//Permutation(int a) {cout << "HALLOllll "<< improvedobjects.size() << endl; }
-		//Permutation(IDJet* wja, IDJet* wjb, IDJet* bjh, IDJet* bjl, TLorentzVector* lep, int leppdgid, IDMet* met);
-		//Permutation(TLorentzVector* wja, TLorentzVector* wjb, TLorentzVector* bjh, TLorentzVector* bjl, TLorentzVector* lep, int leppdgid, TLorentzVector* nu);
-		void Init(TLorentzVector* wja, TLorentzVector* wjb, TLorentzVector* bjh, TLorentzVector* bjl, TLorentzVector* lep, int leppdgid, TLorentzVector* nu)
-		{
-			Reset();
-			wja_ = wja;
-			wjb_ = wjb;
-			bjh_ = bjh;
-			bjl_ = bjl;
-			lep_ = lep;
-			owja_ = wja;
-			owjb_ = wjb;
-			objh_ = bjh;
-			objl_ = bjl;
-			olep_ = lep;
-			nu_ = *nu;
-			lpdgid_ = leppdgid;
-		}
-		//Permutation(TLorentzVector* wja, TLorentzVector* wjb, TLorentzVector* bjh, TLorentzVector* bjl, TLorentzVector* lep, int leppdgid, IDMet* met);
-		void Init(TLorentzVector* wja, TLorentzVector* wjb, TLorentzVector* bjh, TLorentzVector* bjl, TLorentzVector* lep, int leppdgid, IDMet* met)
-		{
-			Reset();
-			wja_ = wja;
-			wjb_ = wjb;
-			bjh_ = bjh;
-			bjl_ = bjl;
-			lep_ = lep;
-			owja_ = wja;
-			owjb_ = wjb;
-			objh_ = bjh;
-			objl_ = bjl;
-			olep_ = lep;
-			met_ = met;
-			lpdgid_ = leppdgid;
-		}
+		void Init(TLorentzVector* wja, TLorentzVector* wjb, TLorentzVector* bjh, TLorentzVector* bjl, TLorentzVector* lep, int leppdgid, const TLorentzVector& nu);
+		void Init(TLorentzVector* wja, TLorentzVector* wjb, TLorentzVector* bjh, TLorentzVector* bjl, TLorentzVector* lep, int leppdgid, IDMet* met);
 		void Reset();
 		bool IsComplete() const {return(wja_ != 0 && wjb_ != 0 && bjh_ != 0 && bjl_ != 0 && lep_ != 0 && (met_ != 0 || nu_.E() > -0.5)&& wja_ != wjb_ && wja_ != bjh_ && wja_ != bjl_ && wjb_ != bjl_ && wjb_ != bjh_ && bjl_ != bjh_);}
 		int NumBJets() const {return((bjl_ != 0 ? 1 : 0) + (bjh_ != 0 ? 1 : 0));}
@@ -128,7 +94,7 @@ class Permutation
 		TLorentzVector* BHad() const {return(bjh_);}
 		TLorentzVector* BLep() const {return(bjl_);}
 		TLorentzVector* L() const {return(lep_);}
-		IDMet* MET() const {return(met_);}
+		TLorentzVector* MET() const {return(met_);}
 		void WJa(TLorentzVector* wja){calculated = false; wja_=wja; owja_=wja;}
 		void WJb(TLorentzVector* wjb){calculated = false; wjb_=wjb; owjb_=wjb;}
 		void BHad(TLorentzVector* bjh){calculated = false; bjh_=bjh; objh_=bjh;}
@@ -137,7 +103,7 @@ class Permutation
 		void Nu(TLorentzVector* nu){calculated = false; nu_=*nu;}
 		int LCharge() {return (lpdgid_ < 0 ? 1 : -1);}
 		int LPDGId() {return lpdgid_;}
-		void MET(IDMet* met){met_=met;}
+		void MET(TLorentzVector* met){met_=met;}
 
 		void Calculate()
 		{

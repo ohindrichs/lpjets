@@ -5,30 +5,50 @@ def getweigthinfo(files):
 	totnum = 0.
 	totnumtrue = 0.
 	totnumtrueW = 0.
+	goodfiles = []
 	for fname in files:
-#		p = subprocess.Popen(['ls', '-l', fname], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-#		info =  p.stderr.read()
-#		if 'cannot access' in info:
-#			print 'ERROR', fname
-#			continue
+	#	p = subprocess.Popen(['ls', '-l', fname], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	#	info =  p.stderr.read()
+	#	if 'cannot access' in info:
+	#		print 'ERROR', fname
+	#		continue
 
 		#fname = fname.replace('/eos/uscms', 'root://cmseos.fnal.gov/')
 		tf = TFile(fname)
+		if tf.IsZombie() == True:
+			print "Zombie file: " + fname
+			continue
+		goodfiles.append(fname)
 		tree = tf.Get('Events')
-		hist = tf.Get('PUDistribution')
-		histW = tf.Get('PUDistribution_w')
 		num = tree.GetEntries()
-		numtrue = hist.Integral()
-		numtrueW = histW.Integral()
 		totnum += num
-		totnumtrue += numtrue
-		totnumtrueW += numtrueW
-	return totnumtrueW, totnumtrue, totnum
+		if 'MC' in files[0]:
+			hist = tf.Get('PUDistribution')
+			histW = tf.Get('PUDistribution_w')
+			numtrue = hist.Integral()
+			numtrueW = histW.Integral()
+			totnumtrue += numtrue
+			totnumtrueW += numtrueW
+	return totnumtrueW, totnumtrue, totnum, goodfiles
 
 def collectfiles(dirname):
 	content = os.listdir(dirname)
-	files = [os.path.join(dirname, c) for c in content if c.startswith('ur_') and c.endswith('.root')]
-	if len(files) != 0: return files
+	files = [c for c in content if c.startswith('ur_') and c.endswith('.root')]
+	if(len(files) != 0):
+		nums = [int(n.split('ur_')[1].split('.root')[0]) for n in files]
+		nums = sorted(nums)
+		missing = []
+		c = 1
+		n = 0
+		while n < len(nums):
+			if c != nums[n]:
+				n-=1
+				missing.append(c)
+			n+=1
+			c+=1
+		print dirname, missing
+		files = [os.path.join(dirname, c) for c in files]
+		return files
 
 	files = []
 	for c in content:
@@ -104,12 +124,13 @@ for d in dirs:
 		print 'No short name for', d
 		continue
 	files = collectfiles(newpath)
-	w, uw, ntree = getweigthinfo(files)
-	print setnames[d].replace('.txt', ':'), len(files), ntree, uw
+	nfiles = len(files)
+	print d, len(files)
+	w, uw, ntree, files = getweigthinfo(files)
+	print setnames[d].replace('.txt', ':'), len(files),nfiles, ntree, uw
 	print setnames[d].replace('.txt', '_W = '), w	
 	newline= d.replace('_', '\_') + ' & ' + str(round(uw/1.E6, 2)) + '(' + str(round(w/1.E6,2)) + ') & \\\\'
 	table += newline + '\n'
-	print newline
 
 	files = [f.replace('/eos/uscms', 'root://cmseos.fnal.gov/') for f in files]	
 	f = open(setnames[d], 'w')

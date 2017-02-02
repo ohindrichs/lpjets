@@ -4,6 +4,40 @@
 
 using namespace std;
 
+void Permutation::Init(TLorentzVector* wja, TLorentzVector* wjb, TLorentzVector* bjh, TLorentzVector* bjl, TLorentzVector* lep, int leppdgid, const TLorentzVector& nu)
+{
+	Reset();
+	wja_ = wja;
+	wjb_ = wjb;
+	bjh_ = bjh;
+	bjl_ = bjl;
+	lep_ = lep;
+	owja_ = wja;
+	owjb_ = wjb;
+	objh_ = bjh;
+	objl_ = bjl;
+	olep_ = lep;
+	nu_ = nu;
+	met_ = &nu_;
+	lpdgid_ = leppdgid;
+}
+
+void Permutation::Init(TLorentzVector* wja, TLorentzVector* wjb, TLorentzVector* bjh, TLorentzVector* bjl, TLorentzVector* lep, int leppdgid, IDMet* met)
+{
+	Reset();
+	wja_ = wja;
+	wjb_ = wjb;
+	bjh_ = bjh;
+	bjl_ = bjl;
+	lep_ = lep;
+	owja_ = wja;
+	owjb_ = wjb;
+	objh_ = bjh;
+	objl_ = bjl;
+	olep_ = lep;
+	met_ = met;
+	lpdgid_ = leppdgid;
+}
 
 //Permutation::Permutation(TLorentzVector* wja, TLorentzVector* wjb, TLorentzVector* bjh, TLorentzVector* bjl, TLorentzVector* lep, int leppdgid, IDMet* met) :
 //	wja_(wja),
@@ -54,7 +88,7 @@ void Permutation::Reset()
 double Permutation::Solve(TTBarSolver& ttsolver, bool kinfit)
 {
 	kinfit_ = kinfit;
-	ttsolver.Solve(bjh_, wjb_, wja_, bjl_, lep_, met_, kinfit_);
+	ttsolver.Solve(bjh_, wjb_, wja_, bjl_, lep_, dynamic_cast<IDMet*>(met_), kinfit_);
 	nu_ = ttsolver.Nu();
 	prob_ = ttsolver.Res();
 	nu_chisq_          = ttsolver.NSChi2();

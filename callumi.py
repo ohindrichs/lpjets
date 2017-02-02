@@ -1,5 +1,5 @@
+from ROOT import TFile, TTree
 import sys, os
-
 
 lfile = open('lumi.cvs')
 
@@ -16,39 +16,38 @@ for l in lfile:
 
 print lumi
 
+tfile = sys.argv[1]
 
-tdir = sys.argv[1]
+tf = TFile(tfile)
 
-files = os.listdir(tdir)
+tr = tf.Get('runls')
 
-files = [f for f in files if '.stdout' in f]
 
 lumis = []
-for f in files:
-	fd = open(os.path.join(tdir, f))
-	for l in fd:
-		if 'SYNC' in l:
-			l = l.split(':')
-			lumis.append(l[1]+':'+l[2])
-
-
-
+for n in range(0, tr.GetEntries()):
+	tr.GetEntry(n)
+	lumis.append(str(tr.run)+':'+str(tr.lumisec))
+	
 print len(lumis)
 
 lumis = set(lumis)
 print len(lumis)
 
 mylumi = 0.
+mislumi = 0.
+
+for l,v in lumimap.iteritems():
+	if l not in lumis:
+		print 'Not in Data'
+		mislumi += v
 
 for l in lumis:
 	if l in lumimap:
 		mylumi += lumimap[l]
 	else:
-		print 'Not found:', l 
+		print 'Not in CVS:', l 
 
 print len(lumimap)
-print mylumi
-
-
+print mylumi, mislumi
 
 

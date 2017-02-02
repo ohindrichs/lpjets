@@ -1,3 +1,3 @@
 #!bin/bash
 #export jobid=JETTESTS
-export jobid=JOB13
+export jobid=JOB14
