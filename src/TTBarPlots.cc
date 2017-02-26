@@ -59,6 +59,22 @@ void TTBarPlots::Init(ttbar* analysis)
 	plot1d.AddHist("massnutest", 500, 0, 100, "-log(#lambda)", "Events");
 	plot2d.AddHist("METunc", 100, 0, 0.5, 100, 0., .5, "#sigma(MET_{x})/MET_{x}", "#sigma(MET_{y})/MET_{y}");
 	plot2d.AddHist("dphi_deta", 100, 0, Pi(), 12, 0., 6., "#Delta #phi(j,j)", "#Delta #eta(jj)");
+	plot2d.AddHist("masst_thadpt", 50, 50, 300, an->topptbins, "M(t_{h}) [GeV]", "p_{T}(t_{h}) [GeV]");
+	plot2d.AddHist("massW_thadpt", 50, 0, 150, an->topptbins, "M(W) [GeV]", "p_{T}(t_{h}) [GeV]");
+	plot2d.AddHist("masst_thady", 50, 50, 300, an->topybins, "M(t_{h}) [GeV]", "|y(t_{h})|");
+	plot2d.AddHist("massW_thady", 50, 0, 150, an->topybins, "M(W) [GeV]", "|y(t_{h})|");
+	plot2d.AddHist("masst_tleppt", 50, 50, 300, an->topptbins, "M(t_{h}) [GeV]", "p_{T}(t_{l}) [GeV]");
+	plot2d.AddHist("massW_tleppt", 50, 0, 150, an->topptbins, "M(W) [GeV]", "p_{T}(t_{l}) [GeV]");
+	plot2d.AddHist("masst_tlepy", 50, 50, 300, an->topybins, "M(t_{h}) [GeV]", "|y(t_{l})|");
+	plot2d.AddHist("massW_tlepy", 50, 0, 150, an->topybins, "M(W) [GeV]", "|y(t_{l})|");
+	plot2d.AddHist("masst_ttm", 50, 50, 300, an->ttmbins, "M(t_{h}) [GeV]", "");
+	plot2d.AddHist("massW_ttm", 50, 0, 150, an->ttmbins, "M(W) [GeV]", "");
+	plot2d.AddHist("masst_ttpt", 50, 50, 300, an->ttptbins, "M(t_{h}) [GeV]", "");
+	plot2d.AddHist("massW_ttpt", 50, 0, 150, an->ttptbins, "M(W) [GeV]", "");
+	plot2d.AddHist("masst_tty", 50, 50, 300, an->ttybins, "M(t_{h}) [GeV]", "");
+	plot2d.AddHist("massW_tty", 50, 0, 150, an->ttybins, "M(W) [GeV]", "");
+	plot2d.AddHist("masst_njet", 50, 50, 300, an->jetbins, "M(t_{h}) [GeV]", "");
+	plot2d.AddHist("massW_njet", 50, 0, 150, an->jetbins, "M(W) [GeV]", "");
 	for(int jn : jetbins)
 	{
 		stringstream jb;
@@ -156,6 +172,22 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 	plot1d["Mt_W"]->Fill(per.MtWLep(), weight);
 	plot1d["Mt_t"]->Fill(per.MttLep(), weight);
 	plot2d["METunc"]->Fill(an->met.pxunc()/an->met.Px(), an->met.pyunc()/an->met.Py(), weight);
+	plot2d["masst_thadpt"]->Fill(per.THad().M(), per.THad().Pt(),weight);
+	plot2d["massW_thadpt"]->Fill(per.WHad().M(), per.THad().Pt(),weight);
+	plot2d["masst_thady"]->Fill(per.THad().M(), abs(per.THad().Rapidity()),weight);
+	plot2d["massW_thady"]->Fill(per.WHad().M(), abs(per.THad().Rapidity()),weight);
+	plot2d["masst_tleppt"]->Fill(per.THad().M(), per.TLep().Pt(),weight);
+	plot2d["massW_tleppt"]->Fill(per.WHad().M(), per.TLep().Pt(),weight);
+	plot2d["masst_tlepy"]->Fill(per.THad().M(), abs(per.TLep().Rapidity()),weight);
+	plot2d["massW_tlepy"]->Fill(per.WHad().M(), abs(per.TLep().Rapidity()),weight);
+	plot2d["masst_ttm"]->Fill(per.THad().M(), per.TT().M(),weight);
+	plot2d["massW_ttm"]->Fill(per.WHad().M(), per.TT().M(),weight);
+	plot2d["masst_ttpt"]->Fill(per.THad().M(), per.TT().Pt(),weight);
+	plot2d["massW_ttpt"]->Fill(per.WHad().M(), per.TT().Pt(),weight);
+	plot2d["masst_tty"]->Fill(per.THad().M(), abs(per.TT().Rapidity()),weight);
+	plot2d["massW_tty"]->Fill(per.WHad().M(), abs(per.TT().Rapidity()),weight);
+	plot2d["masst_njet"]->Fill(per.THad().M(), addjets.size(), weight);
+	plot2d["massW_njet"]->Fill(per.WHad().M(), addjets.size(), weight);
 	for(int jn : jetbins)
 	{
 		stringstream jb;

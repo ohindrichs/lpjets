@@ -22,6 +22,8 @@
 #include "JetScaler.h"
 #include "BTagWeight.h"
 
+#include <TGraphErrors.h>
+
 using namespace std;
 class PDFuncertainty;
 
@@ -218,6 +220,33 @@ class ttbar : public AnalyzerBase
 		TH2D* elsfhist;
 		TH2D* mutrgsfhist;
 		TH2D* eltrgsfhist;
+
+		bool STUDENT = false;
+		TFile* stud_tf = nullptr;
+		TTree* stud_tr = nullptr;
+		Float_t gen_px[2];
+		Float_t gen_py[2];
+		Float_t gen_pz[2];
+		Float_t gen_e[2];
+		Int_t gen_type[2];
+		Float_t det_px[2];
+		Float_t det_py[2];
+		Float_t det_pz[2];
+		Float_t det_e[2];
+		Int_t det_type[2];
+		UInt_t num_gen = 2;
+		UInt_t num_det = 2;
+
+		TGraphErrors* jetcor_BT;
+		TGraphErrors* jetcor_BM;
+		TGraphErrors* jetcor_BL;
+		TGraphErrors* jetcor_Bl;
+		TGraphErrors* jetcor_ET;
+		TGraphErrors* jetcor_EM;
+		TGraphErrors* jetcor_EL;
+		TGraphErrors* jetcor_El;
+
+
 	public:
 
 		ttbar(const std::string output_filename);

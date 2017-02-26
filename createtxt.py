@@ -118,7 +118,6 @@ dirs = os.listdir(dirname)
 table = ''
 for d in dirs:
 	newpath = os.path.join(dirname, d)
-	files = []
 	if os.path.isdir(newpath) == False: continue
 	if d not in setnames:
 		print 'No short name for', d
@@ -126,15 +125,15 @@ for d in dirs:
 	files = collectfiles(newpath)
 	nfiles = len(files)
 	print d, len(files)
-	w, uw, ntree, files = getweigthinfo(files)
-	print setnames[d].replace('.txt', ':'), len(files),nfiles, ntree, uw
+	w, uw, ntree, goodfiles = getweigthinfo(files)
+	print setnames[d].replace('.txt', ':'), len(goodfiles),nfiles, ntree, uw
 	print setnames[d].replace('.txt', '_W = '), w	
 	newline= d.replace('_', '\_') + ' & ' + str(round(uw/1.E6, 2)) + '(' + str(round(w/1.E6,2)) + ') & \\\\'
 	table += newline + '\n'
 
-	files = [f.replace('/eos/uscms', 'root://cmseos.fnal.gov/') for f in files]	
+	goodfiles = [f.replace('/eos/uscms', 'root://cmseos.fnal.gov/') for f in goodfiles]	
 	f = open(setnames[d], 'w')
-	for n in files:
+	for n in goodfiles:
 		f.write(n+'\n')
 
 	f.close()
