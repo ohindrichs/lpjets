@@ -6,11 +6,11 @@
 #include <TLorentzVector.h>
 #include <URStreamer.h>
 #include <IDJet.h>
+#include <IDMet.h>
 
 using namespace std;
 
 class TTBarSolver;
-class IDMet;
 
 class Permutation
 {
@@ -43,7 +43,7 @@ class Permutation
 		TLorentzVector t_cms_;
 		bool kinfit_ = false;
 		vector<TLorentzVector> improvedobjects;
-		vector<const TLorentzVector*> addjets;
+		vector<TLorentzVector*> addjets;
 		
 	public:
 		void SetImproved(bool improved)
@@ -157,7 +157,7 @@ class Permutation
 		bool AreJetsCorrect(const Permutation& other) const
 		{
 			if(NJets() != other.NJets()){return false;}
-			for(int j = 0 ; j < NJets() ; ++j)
+			for(size_t j = 0 ; j < NJets() ; ++j)
 			{
 				if(GetJet(j)->DeltaR(*other.GetJet(j)) > 0.2) {return false;}
 			}
@@ -213,7 +213,7 @@ class Permutation
 			
 			return -1;
 		}
-		const TLorentzVector* GetJet(size_t n) const
+		TLorentzVector* GetJet(size_t n) const
 		{
 			if(n == 0) return BLep();
 			if(n == 1) return BHad();
@@ -224,26 +224,38 @@ class Permutation
 			return nullptr;
 		}
 
-		const TLorentzVector* GetJet(const TLorentzVector* jet) const
+		void ApplyJetCorrections()
+		{
+			TVector2 dmet;
+			for(size_t j = 0 ; j < NJets() ; ++j)
+			{
+				int sftype = 1;
+				if(j == 2 || j == 3) sftype = 2;
+				dmet += dynamic_cast< IDJet* >(GetJet(j))->ApplySF(sftype);
+			}
+			dynamic_cast< IDMet* >(met_)->Update(dmet);
+		}
+
+		const TLorentzVector* GetJet(TLorentzVector* jet) const
 		{
 			int nj = IsJetIn(jet);
 			return(GetJet(nj));
 		}
 
-		int NAddJets() const {return addjets.size();}
-		int NJets() const {return 4+NAddJets();}
+		size_t NAddJets() const {return addjets.size();}
+		size_t NJets() const {return 4+NAddJets();}
 		
 		template<typename T> void SetAdditionalJets(const vector<T*>& jets)
 		{
 			addjets.clear();
-			for(const T* jet : jets)
+			for(T* jet : jets)
 			{
 				if(IsJetIn(jet) == -1){addjets.push_back(jet);}
 			}
 			sort(addjets.begin(), addjets.end(), [](const TLorentzVector* A, const TLorentzVector* B){return A->Pt() > B->Pt();});
 		}
 
-		const vector<const TLorentzVector*>& AddJets() const {return addjets;}
+		const vector<TLorentzVector*>& AddJets() const {return addjets;}
 
 		double Ht() const
 		{

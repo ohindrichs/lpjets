@@ -154,7 +154,7 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 		plot2d["dphi_deta"]->Fill(Abs(dphi), deta, weight);
 	}
 	
-	for(int j = 0 ; j < min(per.NJets(), 8) ; ++j)
+	for(size_t j = 0 ; j < min(per.NJets(), (size_t)8) ; ++j)
 	{
 		stringstream ss;
 		ss << "jet_" << j << "_";

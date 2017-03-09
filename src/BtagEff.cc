@@ -29,7 +29,6 @@ void BtagEff::Init(double btagsel, double bkgcutmin, double bkgcutmax)
 	btagtree->Branch("nvtx", &nvtx, "nvtx/F");
 	btagtree->Branch("typ", &typ, "typ/I");
 	btagtree->Branch("test", &test, "test/I");
-	hdeepcsv = new TH1D("deepcsv", "deepcsv", 1000, -5, 5);
 }
 
 void BtagEff::Fill(Permutation& per, float thenvtx, bool thadcorrect, bool tlepcorrect, double theweight)
@@ -60,7 +59,6 @@ void BtagEff::Fill(Permutation& per, float thenvtx, bool thadcorrect, bool tlepc
 		if(bhad->CvsB() > -0.45 && bhad->CvsL() > 0.69){ j[6] = 2;}
 		j[7] = bhad->DeepCSVb()+bhad->DeepCSVbb();
 		btagtree->Fill();
-		hdeepcsv->Fill(bhad->DeepCSVb()+bhad->DeepCSVbb(), theweight);
 	}
 
 	if(bhad->csvIncl() > btagselection)

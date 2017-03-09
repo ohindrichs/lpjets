@@ -1067,7 +1067,8 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		if(!jet.ID() || !jet.Clean(loosemuons, looseelectrons)) {continue;}
 		double sfgen = jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajet, cjetres);
 		double sfwj = jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajetwj, cjetres);
-		metcorr += jet.SetSF(sfgen, sfwj);
+		jet.SetSF(1, sfgen, metcorr);
+		jet.SetSF(2, sfwj, metcorr);
 		//jet.SetPxPyPzE(jet.Px()*sf, jet.Py()*sf, jet.Pz()*sf, jet.E()*sf);
 		if(jet.Pt() < jetptmin) {continue;}
 
@@ -1766,7 +1767,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
 	if(SEMILEPACC)
 	{
-		for(int j = 0 ; j < min(bestper.NJets(),8) ; ++j)
+		for(size_t j = 0 ; j < min(bestper.NJets(), (size_t)8) ; ++j)
 		{
 			stringstream ss;
 			ss << "jet_" << j << "_";

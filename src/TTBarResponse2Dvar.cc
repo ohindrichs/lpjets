@@ -139,7 +139,7 @@ void TTBarResponse2Dvar::FillTruthReco(string name, double tvalx, double tvaly, 
 
 void TTBarResponse2Dvar::FillRes(string name, double tvalx, double tvaly, double rvalx, double rvaly, double weight)
 {
-	int tbin = GetBin(name, tvalx, tvaly);
+	//int tbin = GetBin(name, tvalx, tvaly);
 	int rbin = GetBin(name, rvalx, rvaly);
 	plot2d[name+"_restruth"]->Fill(rbin-0.5, rvaly-tvaly, weight);
 //	plot2d[name+"_res"]->Fill(rbin-0.5, rvalx-tvalx, weight);

@@ -161,6 +161,7 @@ class ttbar : public AnalyzerBase
 		double cpletamax;
 		double cpjetsep;
 		double csigmajet;
+		double csigmajetwj;
 		string cjecuncertainty;
 		string cBTaggingSF;
 		string cBTaggingEff;
