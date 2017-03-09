@@ -1,7 +1,7 @@
 #!/bin/bash
 JOBDIR=JOB14
 TYP=JOBS14_pseudo
-VER=V22
+VER=V30
 
 cp ttbarxsec.cfg ttbarxsec.tmp
 
@@ -27,12 +27,12 @@ cp ttbarxsec.cfg ttbarxsec.tmp
 #./updateconfig.py nbtag bkgh
 #./jobsub ${TYP}_bkgh_${VER} ttbarxsec.exe ttbarxsec.cfg
 ##UNC
-rm inputs/$JOBDIR/*txt
-cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
+#rm inputs/$JOBDIR/*txt
+#cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
 #./updateconfig.py sigmajet -1
 #./jobsub ${TYP}_jetm1sig_${VER} ttbarxsec.exe ttbarxsec.cfg
-./updateconfig.py sigmajet "-0.5"
-./jobsub ${TYP}_jetm05sig_${VER} ttbarxsec.exe ttbarxsec.cfg
+#./updateconfig.py sigmajet "-0.5"
+#./jobsub ${TYP}_jetm05sig_${VER} ttbarxsec.exe ttbarxsec.cfg
 #./updateconfig.py sigmajet "0.5"
 #./jobsub ${TYP}_jetp05sig_${VER} ttbarxsec.exe ttbarxsec.cfg
 #./updateconfig.py sigmajet 1
@@ -101,4 +101,23 @@ cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
 #./jobsub ${TYP}_fsrdownjetp05_${VER} ttbarxsec.exe ttbarxsec.cfg
 #./updateconfig.py sigmajet 1
 #./jobsub ${TYP}_fsrdownjetp1_${VER} ttbarxsec.exe ttbarxsec.cfg
+rm inputs/$JOBDIR/*txt
+cp inputs/$JOBDIR/backup/tt_fsrdown_PowhegP8.txt inputs/$JOBDIR
+cp inputs/$JOBDIR/backup/tt_fsrup_PowhegP8.txt inputs/$JOBDIR
+cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
+#CC
+./updateconfig.py sigmajet 0 sigmajetwj -0.1889 
+./jobsub ${TYP}_CC_${VER} ttbarxsec.exe ttbarxsec.cfg
+#PP
+./updateconfig.py sigmajet 1 sigmajetwj 0.429 
+./jobsub ${TYP}_PP_${VER} ttbarxsec.exe ttbarxsec.cfg
+#MM
+./updateconfig.py sigmajet -1 sigmajetwj 0.656 
+./jobsub ${TYP}_MM_${VER} ttbarxsec.exe ttbarxsec.cfg
+#PM
+./updateconfig.py sigmajet -1 sigmajetwj -0.379 
+./jobsub ${TYP}_PM_${VER} ttbarxsec.exe ttbarxsec.cfg
+#MP
+./updateconfig.py sigmajet 1 sigmajetwj 0.04
+./jobsub ${TYP}_MP_${VER} ttbarxsec.exe ttbarxsec.cfg
 mv ttbarxsec.tmp ttbarxsec.cfg

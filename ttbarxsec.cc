@@ -137,6 +137,7 @@ ttbar::ttbar(const std::string output_filename):
 	cpjetsep = CP.Get<double>("Pjetsep");
 
 	csigmajet = CP.Get<double>("sigmajet");
+	csigmajetwj = CP.Get<double>("sigmajetwj");
 	cjecuncertainty = CP.Get<string>("jecuncertainty");
 	cjetres = CP.Get<int>("jetres");
 	csigmamet = CP.Get<double>("sigmamet");
@@ -231,8 +232,10 @@ void ttbar::begin()
 	gen1d.AddHist("ty", 500, 0, 10, "y(t)", "Events");
 	gen1d.AddHist("ttpt", 500, 0, 1000, "p_{T}(t#bar{t}) [GeV]", "Events");
 	gen1d.AddHist("tty", 500, 0, 10, "y(t#bar{t})", "Events");
-	gen1d.AddHist("pllepiso", 1000, 0, 10, "lepiso", "Events");
-	gen1d.AddHist("plphiso", 1000, 0, 10, "phiso", "Events");
+	gen2d.AddHist("pllepiso", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
+	gen2d.AddHist("plphiso", 100, 0, 500,200, 0, 2, "phiso", "Events");
+	gen2d.AddHist("pllepisoabs", 100, 0, 500, 200, 0, 100, "lepiso", "Events");
+	gen2d.AddHist("plphisoabs", 100, 0, 500, 200, 0, 100, "phiso", "Events");
 	gen2d.AddHist("met_mt", 500, 0, 500, 500, 0, 500, "met", "mt");
     ttp_genall.Init(this);
     ttp_genacc.Init(this);
@@ -756,6 +759,114 @@ void ttbar::SelectPseudoTopLHC(URStreamer& event)
 	psper.SetAdditionalJets(genaddjets);
 }
 
+//void ttbar::SelectPseudoTop(URStreamer& event)
+//{
+//	const vector<Pl>& pls = event.PLs();
+//	GenObject* lepton = nullptr;
+//	int lc = 0;
+//	TLorentzVector nu;
+//	vector<TLorentzVector*> pstbjets;
+//	vector<TLorentzVector*> pstljets;
+//	vector<TLorentzVector*> pstphotons;
+//	for(const Pl& pl : pls)
+//	{
+//		if(abs(pl.pdgId()) < 6) continue;
+//
+//		if(abs(pl.pdgId()) == 12 || abs(pl.pdgId()) == 14 || abs(pl.pdgId()) == 16)
+//		{
+//			nu += pl;
+//			continue;
+//		}
+//
+//		if(abs(pl.pdgId()) == 13 || abs(pl.pdgId()) == 11)
+//		{
+//			if(Abs(pl.Eta()) < 2.4 && pl.Pt() > 15)
+//			{
+//				lc++;
+//				if(lc == 2) {return;}
+//			}
+//			if(Abs(pl.Eta()) < cpletamax && pl.Pt() > cplptmin)
+//			{
+//				sgenparticles.push_back(pl);
+//				lepton = &(sgenparticles.back());
+//			}
+//		}
+//	}
+//
+//	if(lepton == nullptr) {return;}
+//
+//	for(const Pl& pl : pls)
+//	{
+//		if(abs(pl.pdgId()) > 6) continue;
+//		if(pl.Pt() < min({cpbjetptsoft, cpwjetptsoft}) || Abs(pl.Eta()) > cpjetetamax) continue;
+//		if(lepton->DeltaR(pl) < 0.4) {continue;}
+//		sgenparticles.push_back(pl);
+//		gen1d["plphiso"]->Fill(pl.isoR3(), weight);
+//		if(pl.isoR3() > 0.90)
+//		{
+//			pstphotons.push_back(&(sgenparticles.back()));	
+//			continue;
+//		}
+//		if(abs(pl.pdgId()) == 5)
+//		{
+//			pstbjets.push_back(&(sgenparticles.back()));	
+//		}	
+//		else
+//		{
+//			pstljets.push_back(&(sgenparticles.back()));	
+//		}
+//	}
+//
+//	if(pstbjets.size() < 2 || pstljets.size() < 2){return;}
+//	
+//	TLorentzVector wl(*lepton + nu);
+//	double chi2min = 1.E100;
+//	double MW = 80.4;
+//	double Mt = 172.5;
+//	for(int wa = 0 ; wa < pstljets.size() ; wa++)
+//	{
+//		for(int wb = 0 ; wb < wa ; wb++)
+//		{
+//			if((pstljets[wa]->Pt() < cpwjetpthard && pstljets[wa]->Pt() < cpwjetpthard)){continue;}
+//			TLorentzVector wh(*pstljets[wa] + *pstljets[wb]);
+//			for(int bl = 0 ; bl < pstbjets.size() ; bl++)
+//			{
+//				if(pstbjets[bl] == pstljets[wa] || pstbjets[bl] == pstljets[wb]) {continue;}
+//				for(int bh = 0 ; bh < pstbjets.size() ; bh++)
+//				{
+//					if(pstbjets[bh] == pstljets[wa] || pstbjets[bh] == pstljets[wb] || pstbjets[bh] == pstbjets[bl]){continue;}
+//					if(pstbjets[bh]->Pt() < cpbjetpthard && pstbjets[bl]->Pt() < cpbjetpthard) {continue;}
+//					TLorentzVector th(wh + *pstbjets[bh]);
+//					TLorentzVector tl(wl + *pstbjets[bl]);
+//					double chi2 = Power(th.M() - Mt, 2) + Power(tl.M() - Mt, 2) + Power(wh.M() - MW, 2);
+//					if(chi2 < chi2min)
+//					{
+//						chi2min = chi2;
+//						psper.Init(pstljets[wa], pstljets[wb], pstbjets[bh], pstbjets[bl], lepton, lepton->pdgId(), nu);
+//					}
+//				}
+//			}
+//		}
+//	}
+//	
+//	vector<TLorentzVector*> genaddjets;
+//	for(TLorentzVector* gj : pstbjets)
+//	{
+//		if(psper.IsJetIn(gj) == -1)
+//		{
+//			genaddjets.push_back(gj);
+//		}
+//	}
+//	for(TLorentzVector* gj : pstljets)
+//	{
+//		if(psper.IsJetIn(gj) == -1)
+//		{
+//			genaddjets.push_back(gj);
+//		}
+//	}
+//	psper.SetAdditionalJets(genaddjets);
+//}
+
 void ttbar::SelectPseudoTop(URStreamer& event)
 {
 	const vector<Pl>& pls = event.PLs();
@@ -775,17 +886,33 @@ void ttbar::SelectPseudoTop(URStreamer& event)
 			continue;
 		}
 
-		if(abs(pl.pdgId()) == 13 || abs(pl.pdgId()) == 11)
+		if(pl.pdgId() == 22)
 		{
-			if(Abs(pl.Eta()) < 2.4 && pl.Pt() > 15)
-			{
-				lc++;
-				if(lc == 2) {return;}
-			}
-			if(Abs(pl.Eta()) < cpletamax && pl.Pt() > cplptmin)
+			gen2d["plphiso"]->Fill(pl.Pt(), pl.isoR3()/pl.Pt(), weight);
+			gen2d["plphisoabs"]->Fill(pl.Pt(), pl.isoR3(), weight);
+			if(pl.isoR3()/pl.Pt() < 0.2 && Abs(pl.Eta()) < 2.4 && pl.Pt() > 15.)
 			{
 				sgenparticles.push_back(pl);
-				lepton = &(sgenparticles.back());
+				pstphotons.push_back(&(sgenparticles.back()));
+			}
+		}
+
+		if(abs(pl.pdgId()) == 13 || abs(pl.pdgId()) == 11)
+		{
+			gen2d["pllepiso"]->Fill(pl.Pt(), pl.isoR3()/pl.Pt(), weight);
+			gen2d["pllepisoabs"]->Fill(pl.Pt(), pl.isoR3(), weight);
+			if(pl.isoR3()/pl.Pt() < 0.2)
+			{
+				if(Abs(pl.Eta()) < 2.4 && pl.Pt() > 15)
+				{
+					lc++;
+					if(lc == 2) {return;}
+				}
+				if(Abs(pl.Eta()) < cpletamax && pl.Pt() > cplptmin)
+				{
+					sgenparticles.push_back(pl);
+					lepton = &(sgenparticles.back());
+				}
 			}
 		}
 	}
@@ -797,13 +924,10 @@ void ttbar::SelectPseudoTop(URStreamer& event)
 		if(abs(pl.pdgId()) > 6) continue;
 		if(pl.Pt() < min({cpbjetptsoft, cpwjetptsoft}) || Abs(pl.Eta()) > cpjetetamax) continue;
 		if(lepton->DeltaR(pl) < 0.4) {continue;}
+		bool isph = false;
+		for(TLorentzVector* ph : pstphotons) {if(ph->DeltaR(pl) < 0.4) {isph = true;}}
+		if(isph) continue;
 		sgenparticles.push_back(pl);
-		gen1d["plphiso"]->Fill(pl.isoR3(), weight);
-		if(pl.isoR3() > 0.90)
-		{
-			pstphotons.push_back(&(sgenparticles.back()));	
-			continue;
-		}
 		if(abs(pl.pdgId()) == 5)
 		{
 			pstbjets.push_back(&(sgenparticles.back()));	
@@ -934,39 +1058,17 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	}
 	if(looseelectrons.size() == 2) {reco1d["drel"]->Fill(looseelectrons[0]->DeltaR(*looseelectrons[1]));}
 
-	double  metcorrx = 0.;
-	double  metcorry = 0.;
+	TVector2 metcorr;
 	const vector<Jet>& jets = event.jets();
 	for(vector<Jet>::const_iterator jetit = jets.begin(); jetit != jets.end(); ++jetit)
 	{
 		IDJet jet(*jetit);
 		if(Abs(jet.Eta()) > cjetetamax) {continue;}
 		if(!jet.ID() || !jet.Clean(loosemuons, looseelectrons)) {continue;}
-		double sf = jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajet, cjetres);
-		//reco1d["pupt_tight"]->Fill(jet.pupt_tight(), weight);
-		//reco1d["pupt_loose"]->Fill(jet.pupt_loose(), weight);
-		//reco1d["allpt_tight"]->Fill(jet.pupt_alltight(), weight);
-		//reco1d["allpt_loose"]->Fill(jet.pupt_allloose(), weight);
-		//sf *= 1.-jet.pupt_alltight();
-		metcorrx -= (sf-1)*jet.Px(); 
-		metcorry -= (sf-1)*jet.Py();
-		//double flvcor = 0.;
-		//if(abs(jet.Eta()) < 1.5)
-		//{
-		//	if(jet.csvIncl() > B_TIGHT) { flvcor = jetcor_BT->Eval(jet.Pt()); }
-		//	else if(jet.csvIncl() > B_MEDIUM) { flvcor = jetcor_BM->Eval(jet.Pt()); }
-		//	else if(jet.csvIncl() > B_LOOSE) { flvcor = jetcor_BL->Eval(jet.Pt()); }
-		//	else {flvcor = jetcor_Bl->Eval(jet.Pt());}
-		//}
-		//else
-		//{
-		//	if(jet.csvIncl() > B_TIGHT) { flvcor = jetcor_ET->Eval(jet.Pt()); }
-		//	else if(jet.csvIncl() > B_MEDIUM) { flvcor = jetcor_EM->Eval(jet.Pt()); }
-		//	else if(jet.csvIncl() > B_LOOSE) { flvcor = jetcor_EL->Eval(jet.Pt()); }
-		//	else {flvcor = jetcor_El->Eval(jet.Pt());}
-		//}
-		//sf *= 1./(1.+flvcor);
-		jet.SetPxPyPzE(jet.Px()*sf, jet.Py()*sf, jet.Pz()*sf, jet.E()*sf);
+		double sfgen = jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajet, cjetres);
+		double sfwj = jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajetwj, cjetres);
+		metcorr += jet.SetSF(sfgen, sfwj);
+		//jet.SetPxPyPzE(jet.Px()*sf, jet.Py()*sf, jet.Pz()*sf, jet.E()*sf);
 		if(jet.Pt() < jetptmin) {continue;}
 
 		sjets.push_back(jet);
@@ -978,9 +1080,9 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	if(mets.size() == 1)
 	{
 		met = mets[0];
-		met.SetPx(met.Px() + metcorrx + csigmamet*met.pxunc());
-		met.SetPy(met.Py() + metcorry + csigmamet*met.pyunc());
-		met.SetE(Sqrt(met.Px()*met.Px() + met.Py()*met.Py()));
+		met.SetPx(met.Px() + csigmamet*met.pxunc());
+		met.SetPy(met.Py() + csigmamet*met.pyunc());
+		met.Update(metcorr);
 	}
 
 	if(SEMILEPACC)
@@ -1369,6 +1471,7 @@ void ttbar::ttanalysis(URStreamer& event)
 					if(l == i || l == j || l == k) continue;
 					if(nbtaglocal == 1 && k != 0 && l != 0) continue;
 					testper.Init(reducedjets[i], reducedjets[j], reducedjets[k], reducedjets[l], lep, leppdgid, &met);
+					testper.ApplyJetCorrections();
 					if(testper.WJa()->Pt() < cwjetpthard && testper.WJb()->Pt() < cwjetpthard) continue;
 					if(testper.WJa()->Pt() < cwjetptsoft || testper.WJb()->Pt() < cwjetptsoft) continue;
 					if(testper.BHad()->Pt() < cbjetpthard && testper.BLep()->Pt() < cbjetpthard) continue;
