@@ -267,12 +267,8 @@ void ttbar::begin()
 	truth2d.AddHist("dPtbJet_rightC_pu", 200, 0., 1., 100, -2., 2., "pu", "#Deltap_{T}/p_{T}");
 	truth2d.AddHist("jetscale_lB", 800, 0., 800., 200, -1., 1., "p_{T} [GeV]", "#Deltap_{T}/p_{T}");
 	truth2d.AddHist("jetscale_lE", 800, 0., 800., 200, -1., 1., "p_{T} [GeV]", "#Deltap_{T}/p_{T}");
-	truth2d.AddHist("jetscale_MB", 800, 0., 800., 200, -1., 1., "p_{T} [GeV]", "#Deltap_{T}/p_{T}");
-	truth2d.AddHist("jetscale_ME", 800, 0., 800., 200, -1., 1., "p_{T} [GeV]", "#Deltap_{T}/p_{T}");
-	truth2d.AddHist("jetscale_LB", 800, 0., 800., 200, -1., 1., "p_{T} [GeV]", "#Deltap_{T}/p_{T}");
-	truth2d.AddHist("jetscale_LE", 800, 0., 800., 200, -1., 1., "p_{T} [GeV]", "#Deltap_{T}/p_{T}");
-	truth2d.AddHist("jetscale_TB", 800, 0., 800., 200, -1., 1., "p_{T} [GeV]", "#Deltap_{T}/p_{T}");
-	truth2d.AddHist("jetscale_TE", 800, 0., 800., 200, -1., 1., "p_{T} [GeV]", "#Deltap_{T}/p_{T}");
+	truth2d.AddHist("jetscale_bB", 800, 0., 800., 200, -1., 1., "p_{T} [GeV]", "#Deltap_{T}/p_{T}");
+	truth2d.AddHist("jetscale_bE", 800, 0., 800., 200, -1., 1., "p_{T} [GeV]", "#Deltap_{T}/p_{T}");
 	truth1d.AddHist("dRNu_right", 200, 0., 10., "#DeltaR(#nu_{gen}, #nu_{rec})", "Events");
 	truth1d.AddHist("dPtNu_right", 200, -2., 2., "#Deltap_{T}/p_{T}", "Events");
 	truth1d.AddHist("dPzNu_right", 200, -2., 2., "#Deltap_{z}/p_{z}", "Events");
@@ -1093,38 +1089,15 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 			const TLorentzVector* genj = genper->GetJet(j);
 			if(genj == nullptr) continue;
 			double dpt = (j->Pt() - genj->Pt())/genj->Pt();
-			//if(find_if(genbhadrons.begin(), genbhadrons.end(), [&](GenObject* bp){return j->DeltaR(*bp) < 0.3;}) != genbhadrons.end())
-			if(j->csvIncl() > B_TIGHT)
+			if(find_if(genbhadrons.begin(), genbhadrons.end(), [&](GenObject* bp){return j->DeltaR(*bp) < 0.3;}) != genbhadrons.end())
 			{
 				if(Abs(j->Eta()) < 1.5)
 				{
-					truth2d["jetscale_TB"]->Fill(j->Pt(), dpt, weight);
+					truth2d["jetscale_bB"]->Fill(j->Pt(), dpt, weight);
 				}
 				else
 				{
-					truth2d["jetscale_TE"]->Fill(j->Pt(), dpt, weight);
-				}					
-			}
-			else if(j->csvIncl() > B_MEDIUM)
-			{
-				if(Abs(j->Eta()) < 1.5)
-				{
-					truth2d["jetscale_MB"]->Fill(j->Pt(), dpt, weight);
-				}
-				else
-				{
-					truth2d["jetscale_ME"]->Fill(j->Pt(), dpt, weight);
-				}					
-			}
-			else if(j->csvIncl() > B_LOOSE)
-			{
-				if(Abs(j->Eta()) < 1.5)
-				{
-					truth2d["jetscale_LB"]->Fill(j->Pt(), dpt, weight);
-				}
-				else
-				{
-					truth2d["jetscale_LE"]->Fill(j->Pt(), dpt, weight);
+					truth2d["jetscale_bE"]->Fill(j->Pt(), dpt, weight);
 				}					
 			}
 			else
@@ -1143,46 +1116,46 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 
 	if(SEMILEPACC)
 	{
-			rightper.MET(&met);
-			for(IDElectron* el : mediumelectrons)
+		rightper.MET(&met);
+		for(IDElectron* el : mediumelectrons)
+		{
+			if(el->DeltaR(*genper->L()) < 0.2)
 			{
-				if(el->DeltaR(*genper->L()) < 0.2)
-				{
-					rightper.L(el, el->charge()*-13);
-					truth1d["found"]->Fill(4.5, weight);
-				}
+				rightper.L(el, el->charge()*-13);
+				truth1d["found"]->Fill(4.5, weight);
 			}
+		}
 
-			for(IDMuon* mu : tightmuons)
+		for(IDMuon* mu : tightmuons)
+		{
+			if(mu->DeltaR(*genper->L()) < 0.2)
 			{
-				if(mu->DeltaR(*genper->L()) < 0.2)
-				{
-					rightper.L(mu, mu->charge()*-11);
-					truth1d["found"]->Fill(5.5, weight);
-				}
+				rightper.L(mu, mu->charge()*-11);
+				truth1d["found"]->Fill(5.5, weight);
 			}
+		}
 
-			bool wa = false;
-			bool wb = false;
-			bool ba = false;
-			bool bb = false;
-			double ptbhadmax = 0.;
-			double ptblepmax = 0.;
-			double wjaptmax = 0.;
-			double wjbptmax = 0.;
-			for(size_t j = 0 ; j < cleanedjets.size() ; ++j)
+		bool wa = false;
+		bool wb = false;
+		bool ba = false;
+		bool bb = false;
+		double ptbhadmax = 0.;
+		double ptblepmax = 0.;
+		double wjaptmax = 0.;
+		double wjbptmax = 0.;
+		for(size_t j = 0 ; j < cleanedjets.size() ; ++j)
+		{
+			IDJet* jet = cleanedjets[j];
+			if(jet->DeltaR(*genper->BHad()) < 0.2 && jet->Pt() > ptbhadmax)
 			{
-				IDJet* jet = cleanedjets[j];
-				if(jet->DeltaR(*genper->BHad()) < 0.2 && jet->Pt() > ptbhadmax)
-				{
-					ptbhadmax = jet->Pt();
-					rightper.BHad(jet);
-					if(!ba){ba = true; truth1d["found"]->Fill(0.5, weight);}
-				}
-				if(jet->DeltaR(*genper->BLep()) < 0.2 && jet->Pt() > ptblepmax)
-				{
-					ptblepmax = jet->Pt();
-					rightper.BLep(jet);
+				ptbhadmax = jet->Pt();
+				rightper.BHad(jet);
+				if(!ba){ba = true; truth1d["found"]->Fill(0.5, weight);}
+			}
+			if(jet->DeltaR(*genper->BLep()) < 0.2 && jet->Pt() > ptblepmax)
+			{
+				ptblepmax = jet->Pt();
+				rightper.BLep(jet);
 					if(!bb){bb = true; truth1d["found"]->Fill(1.5, weight);}
 				}
 				if(jet->DeltaR(*genper->WJa()) < 0.2 && jet->Pt() > wjaptmax)

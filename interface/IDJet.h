@@ -34,7 +34,7 @@ class IDJet : public Jet, public MCMatchable
 			double sf = m_sf[sftype]/m_sf[m_sftype];
 			m_sftype = sftype;
 			TVector2 dmet((sf-1.)*Px(), (sf-1.)*Py());
-			//SetPxPyPzE(sf*Px(), sf*Py(), sf*Pz(), sf*E());
+			SetPxPyPzE(sf*Px(), sf*Py(), sf*Pz(), sf*E());
 			return dmet;
 		}
 	double genpt = 0.;

@@ -24,10 +24,10 @@ public:
 
 	void Update(const TVector2& cor)
 	{
-//		SetPx(Px()+m_cor.Px()-cor.Px());
-//		SetPy(Py()+m_cor.Py()-cor.Py());
-//		SetE(sqrt(Px()*Px() + Py()*Py()));
-//		m_cor = cor;
+		SetPx(Px()+m_cor.Px()-cor.Px());
+		SetPy(Py()+m_cor.Py()-cor.Py());
+		SetE(sqrt(Px()*Px() + Py()*Py()));
+		m_cor = cor;
 	}
 };
 #endif
