@@ -47,10 +47,10 @@ class ttbar : public AnalyzerBase
 		bool SEMILEPACC;
 		GenObject gps[8];
 		list<GenObject> sgenparticles;
-		vector<GenObject*> genfincls;
-	  	vector<GenObject*> genbhadrons;
-	  	vector<GenObject*> genchadrons;
-	  	vector<GenObject*> genfinalpartons;
+	  	vector<GenObject*> genalljets;
+	  	vector<GenObject*> genbjets;
+	  	vector<GenObject*> gencjets;
+	  	vector<GenObject*> genljets;
 		TLorentzVector gentq;
 		TLorentzVector gentqbar;
 		TLorentzVector gentqlep;
@@ -71,7 +71,6 @@ class ttbar : public AnalyzerBase
 		//reco
 		list<IDJet> sjets;
 		vector<IDJet*> cleanedjets;
-		vector<IDJet*> reducedjets;
 		list<IDMuon> smuons;
 		vector<IDMuon*> loosemuons;
 		vector<IDMuon*> tightmuons;
@@ -237,16 +236,6 @@ class ttbar : public AnalyzerBase
 		Int_t det_type[2];
 		UInt_t num_gen = 2;
 		UInt_t num_det = 2;
-
-		TGraphErrors* jetcor_BT;
-		TGraphErrors* jetcor_BM;
-		TGraphErrors* jetcor_BL;
-		TGraphErrors* jetcor_Bl;
-		TGraphErrors* jetcor_ET;
-		TGraphErrors* jetcor_EM;
-		TGraphErrors* jetcor_EL;
-		TGraphErrors* jetcor_El;
-
 
 	public:
 

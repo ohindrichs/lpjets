@@ -128,12 +128,6 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 	plot1d["massnutest"]->Fill(per.Prob(), weight);
 
 	const vector<TLorentzVector*> addjets = per.AddJets();
-//	vector<IDJet*> addjets;
-//	for(size_t j = 0 ; j < an->cleanedjets.size() ; ++j)
-//	{
-//		if(!per.IsJetIn(an->cleanedjets[j])){addjets.push_back(an->cleanedjets[j]);}
-//	}
-//	sort(addjets.begin(), addjets.end(), [](IDJet* A, IDJet* B){return A->Pt() > B->Pt();});
 	plot1d["njets"]->Fill(addjets.size(), weight);
 
 	double dphi = -1;
@@ -192,7 +186,7 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 	{
 		stringstream jb;
 		if(jn != -1) jb << jn << "_";
-		if((jn == -1) || (an->reducedjets.size() - 4 == size_t(jn)) || (jn == jetbins.back() && an->reducedjets.size() - 4 > size_t(jn)))
+		if((jn == -1) || (per.NAddJets() == size_t(jn)) || (jn == jetbins.back() && per.NAddJets() > size_t(jn)))
 		{
 			plot2d["test_"+jb.str()+"testb"]->Fill(test, testb, weight);
 			plot2d["test_"+jb.str()+"nobin"]->Fill(test, per.THad().Pt(), weight);
@@ -228,8 +222,8 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 			plot2d["testb_"+jb.str()+"ttpt"]->Fill(testb, ttpt, weight);
 			plot2d["test_"+jb.str()+"costhetastar"]->Fill(test, per.T_CMS().CosTheta(), weight);
 			plot2d["testb_"+jb.str()+"costhetastar"]->Fill(testb, per.T_CMS().CosTheta(), weight);
-			plot2d["test_"+jb.str()+"njet"]->Fill(test, an->cleanedjets.size()-4, weight);
-			plot2d["testb_"+jb.str()+"njet"]->Fill(testb, an->cleanedjets.size()-4, weight);
+			plot2d["test_"+jb.str()+"njet"]->Fill(test, per.NAddJets(), weight);
+			plot2d["testb_"+jb.str()+"njet"]->Fill(testb, per.NAddJets(), weight);
 			plot2d["test_"+jb.str()+"met"]->Fill(test, an->met.Pt(), weight);
 			plot2d["testb_"+jb.str()+"met"]->Fill(testb, an->met.Pt(), weight);
 		}

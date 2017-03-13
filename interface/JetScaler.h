@@ -42,7 +42,8 @@ class JetScaler
 
 		void Init(const string& filename, const string& type);
 
-		double GetScale(const IDJet& jet, double rho, double sigmascale = 0., double sigmares = 0);
+		double GetRes(const IDJet& jet, double rho, double sigmares = 0.);
+		double GetScale(const IDJet& jet, double rho, double sigmascale = 0.);
 };
 
 
