@@ -22,20 +22,19 @@ class IDJet : public Jet, public MCMatchable
 		{
 			if(n > m_sf.size()) m_sf.resize(n+1);
 			m_sf[n] = sf;
-			if(m_sf[m_maxsf] < m_sf[n])
+			if(m_sf[m_maxsf] < m_sf[n] || m_maxsf == 0)
 			{
 				m_maxsf = n;
-				metcorr =  ApplySF(m_maxsf);
+				ApplySF(m_maxsf, metcorr);
 			}
 		}
-		TVector2 ApplySF(size_t sftype)
+		void ApplySF(size_t sftype, TVector2& metcorr)
 		{
-			if(m_sftype == sftype) return TVector2(0., 0.);
+			if(m_sftype == sftype) return;
 			double sf = m_sf[sftype]/m_sf[m_sftype];
 			m_sftype = sftype;
-			TVector2 dmet((sf-1.)*Px(), (sf-1.)*Py());
+			metcorr += TVector2((sf-1.)*Px(), (sf-1.)*Py());
 			SetPxPyPzE(sf*Px(), sf*Py(), sf*Pz(), sf*E());
-			return dmet;
 		}
 	double genpt = 0.;
 	IDJet(const Jet el):

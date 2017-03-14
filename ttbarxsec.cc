@@ -734,7 +734,7 @@ void ttbar::SelectPseudoTopLHC(URStreamer& event)
 			genaddjets.push_back(gj);
 		}
 	}
-	psper.SetAdditionalJets(genaddjets);
+	psper.SetAdditionalJets(genaddjets, [](TLorentzVector* j){return true;});
 }
 
 //void ttbar::SelectPseudoTop(URStreamer& event)
@@ -963,7 +963,7 @@ void ttbar::SelectPseudoTop(URStreamer& event)
 			genaddjets.push_back(gj);
 		}
 	}
-	psper.SetAdditionalJets(genaddjets);
+	psper.SetAdditionalJets(genaddjets, [](TLorentzVector* j){return true;});
 }
 
 void ttbar::AddGenJetSelection(URStreamer& event)
@@ -1040,7 +1040,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	}
 	if(looseelectrons.size() == 2) {reco1d["drel"]->Fill(looseelectrons[0]->DeltaR(*looseelectrons[1]));}
 
-	TVector2 metcorr;
+	TVector2 metcorr(0.,0.);
 	const vector<Jet>& jets = event.jets();
 	for(vector<Jet>::const_iterator jetit = jets.begin(); jetit != jets.end(); ++jetit)
 	{
@@ -1052,13 +1052,16 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		double sfwj = sfres + jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajetwj);
 		jet.SetSF(1, sfgen, metcorr);
 		jet.SetSF(2, sfwj, metcorr);
-		//jet.SetPxPyPzE(jet.Px()*sf, jet.Py()*sf, jet.Pz()*sf, jet.E()*sf);
 		if(jet.Pt() < jetptmin) {continue;}
 
 		sjets.push_back(jet);
 		cleanedjets.push_back(&(sjets.back()));
 	}
 
+	for(IDJet* j:cleanedjets)
+	{
+		j->ApplySF(1, metcorr);
+	}
 	//const vector<Nohfmet>& mets = event.NoHFMETs();
 	const vector<Met>& mets = event.METs();
 	if(mets.size() == 1)
@@ -1069,10 +1072,6 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		met.Update(metcorr);
 	}
 
-	for(IDJet* j:cleanedjets)
-	{
-		j->ApplySF(1);
-	}
 
 	for(IDJet* j:cleanedjets)
 	{
@@ -1383,6 +1382,10 @@ void ttbar::ttanalysis(URStreamer& event)
 	{
 		for(size_t j = nbtaglocal ; j < i ; ++j)
 		{
+			TVector2 metcor(0.,0.);
+			reducedjets[i]->ApplySF(2, metcor);
+			reducedjets[j]->ApplySF(2, metcor);
+			met.Update(metcor);
 			for(size_t k = 0 ; k < (nbtaglocal == 2 ? 2 : reducedjets.size()) ; ++k)
 			{
 				if(i == k || j == k) continue;
@@ -1391,7 +1394,6 @@ void ttbar::ttanalysis(URStreamer& event)
 					if(l == i || l == j || l == k) continue;
 					if(nbtaglocal == 1 && k != 0 && l != 0) continue;
 					testper.Init(reducedjets[i], reducedjets[j], reducedjets[k], reducedjets[l], lep, leppdgid, &met);
-					testper.ApplyJetCorrections();
 					if(testper.WJa()->Pt() < cwjetpthard && testper.WJb()->Pt() < cwjetpthard) continue;
 					if(testper.WJa()->Pt() < cwjetptsoft || testper.WJb()->Pt() < cwjetptsoft) continue;
 					if(testper.BHad()->Pt() < cbjetpthard && testper.BLep()->Pt() < cbjetpthard) continue;
@@ -1454,19 +1456,16 @@ void ttbar::ttanalysis(URStreamer& event)
 					}
 				}
 			}
+			TVector2 metcorback(0.,0.);
+			reducedjets[i]->ApplySF(1, metcorback);
+			reducedjets[j]->ApplySF(1, metcorback);
+			met.Update(metcorback);
 		}
 	}
 	if(bestper.Prob() > 1E9){return;}
 	}
 	if(bestper.IsComplete() == false){return;}
-	vector<IDJet*> correctedjets;
-	for(IDJet* jet : cleanedjets)
-	{
-		jet->ApplySF(1);
-		if(jet->Pt() > jetptmin) correctedjets.push_back(jet);
-	}
-	bestper.SetAdditionalJets(correctedjets);
-	bestper.ApplyJetCorrections();
+	bestper.SetAdditionalJets(cleanedjets, [&](IDJet* jet){return jet->Pt() >= jetptmin;});
 
 	if(rightper.IsComplete() && reducedjets.size() == 4)
 	{

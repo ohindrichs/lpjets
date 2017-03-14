@@ -3,6 +3,7 @@
 #include <vector>
 #include <limits>
 #include <iostream>
+#include <algorithm>
 #include <TLorentzVector.h>
 #include <URStreamer.h>
 #include <IDJet.h>
@@ -224,17 +225,17 @@ class Permutation
 			return nullptr;
 		}
 
-		void ApplyJetCorrections()
-		{
-			TVector2 dmet;
-			for(size_t j = 0 ; j < NJets() ; ++j)
-			{
-				int sftype = 1;
-				if(j == 2 || j == 3) sftype = 2;
-				dmet += dynamic_cast< IDJet* >(GetJet(j))->ApplySF(sftype);
-			}
-			dynamic_cast< IDMet* >(met_)->Update(dmet);
-		}
+	//	void ApplyJetCorrections()
+	//	{
+	//		TVector2 dmet;
+	//		for(size_t j = 0 ; j < NJets() ; ++j)
+	//		{
+	//			int sftype = 1;
+	//			if(j == 2 || j == 3) sftype = 2;
+	//			dynamic_cast< IDJet* >(GetJet(j))->ApplySF(sftype, dmet);
+	//		}
+	//		dynamic_cast< IDMet* >(met_)->Update(dmet);
+	//	}
 
 		const TLorentzVector* GetJet(TLorentzVector* jet) const
 		{
@@ -245,12 +246,12 @@ class Permutation
 		size_t NAddJets() const {return addjets.size();}
 		size_t NJets() const {return 4+NAddJets();}
 		
-		template<typename T> void SetAdditionalJets(const vector<T*>& jets)
+		template<typename T, class UnaryPredicate > void SetAdditionalJets(const vector<T*>& jets, UnaryPredicate selection = [](T* obj)->bool{return true;})
 		{
 			addjets.clear();
 			for(T* jet : jets)
 			{
-				if(IsJetIn(jet) == -1){addjets.push_back(jet);}
+				if(IsJetIn(jet) == -1 && selection(jet)){addjets.push_back(jet);}
 			}
 			sort(addjets.begin(), addjets.end(), [](const TLorentzVector* A, const TLorentzVector* B){return A->Pt() > B->Pt();});
 		}
