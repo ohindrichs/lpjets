@@ -276,7 +276,7 @@ private:
 class Trigger{
 friend class URStreamer;
 public:
-//  Trigger(const Int_t &i_HLT_notexists_,const Int_t &i_HLT_IsoTkMu24_,const Int_t &i_HLT_IsoMu24_,const Int_t &i_HLT_IsoTkMu27_,const Int_t &i_HLT_IsoMu27_,const Int_t &i_HLT_Ele27_eta2p1_WPTight_Gsf_,const Int_t &i_HLT_Ele32_eta2p1_WPTight_Gsf_,const Int_t &i_HLT_Ele32_WPTight_Gsf_,const Int_t &i_HLT_Ele27_WPTight_Gsf_,const Int_t &i_L1_SingleIsoEG34er_,const Int_t &i_L1_SingleIsoEG34_,const Int_t &i_L1_SingleIsoEG32er_,const Int_t &i_L1_SingleIsoEG32_):
+//  Trigger(const Int_t &i_HLT_notexists_,const Int_t &i_HLT_IsoTkMu24_,const Int_t &i_HLT_IsoMu24_,const Int_t &i_HLT_IsoTkMu27_,const Int_t &i_HLT_IsoMu27_,const Int_t &i_HLT_Ele27_eta2p1_WPTight_Gsf_,const Int_t &i_HLT_Ele32_eta2p1_WPTight_Gsf_,const Int_t &i_HLT_Ele32_WPTight_Gsf_,const Int_t &i_HLT_Ele27_WPTight_Gsf_,const Int_t &i_L1_SingleIsoEG34er_,const Int_t &i_L1_SingleIsoEG34_,const Int_t &i_L1_SingleIsoEG32er_,const Int_t &i_L1_SingleIsoEG32_,const Int_t &i_PSColumn_,const Int_t &i_El27ptmax_):
 //    
 //  {}
   Trigger():
@@ -292,7 +292,9 @@ public:
     L1_SingleIsoEG34er_(0),
     L1_SingleIsoEG34_(0),
     L1_SingleIsoEG32er_(0),
-    L1_SingleIsoEG32_(0)
+    L1_SingleIsoEG32_(0),
+    PSColumn_(0),
+    El27ptmax_(0)
   {}
   Int_t HLT_notexists() const {return HLT_notexists_;}
   Int_t HLT_IsoTkMu24() const {return HLT_IsoTkMu24_;}
@@ -307,6 +309,8 @@ public:
   Int_t L1_SingleIsoEG34() const {return L1_SingleIsoEG34_;}
   Int_t L1_SingleIsoEG32er() const {return L1_SingleIsoEG32er_;}
   Int_t L1_SingleIsoEG32() const {return L1_SingleIsoEG32_;}
+  Int_t PSColumn() const {return PSColumn_;}
+  Int_t El27ptmax() const {return El27ptmax_;}
 private:
   Int_t HLT_notexists_;
   Int_t HLT_IsoTkMu24_;
@@ -321,6 +325,8 @@ private:
   Int_t L1_SingleIsoEG34_;
   Int_t L1_SingleIsoEG32er_;
   Int_t L1_SingleIsoEG32_;
+  Int_t PSColumn_;
+  Int_t El27ptmax_;
   void setHLT_notexists(const Int_t value) {HLT_notexists_ = value;}
   void setHLT_IsoTkMu24(const Int_t value) {HLT_IsoTkMu24_ = value;}
   void setHLT_IsoMu24(const Int_t value) {HLT_IsoMu24_ = value;}
@@ -334,6 +340,8 @@ private:
   void setL1_SingleIsoEG34(const Int_t value) {L1_SingleIsoEG34_ = value;}
   void setL1_SingleIsoEG32er(const Int_t value) {L1_SingleIsoEG32er_ = value;}
   void setL1_SingleIsoEG32(const Int_t value) {L1_SingleIsoEG32_ = value;}
+  void setPSColumn(const Int_t value) {PSColumn_ = value;}
+  void setEl27ptmax(const Int_t value) {El27ptmax_ = value;}
 };
 
 class Electron: public TLorentzVector{
@@ -455,6 +463,32 @@ public:
 private:
   Double_t value_;
   void setvalue(const Double_t value) {value_ = value;}
+};
+
+class Rivetpl: public TLorentzVector{
+friend class URStreamer;
+public:
+//  Rivetpl(const int &i_charge_,const int &i_pdgId_,const int &i_status_):
+//    
+//  {}
+  Rivetpl():
+    TLorentzVector(),
+    charge_(0),
+    pdgId_(0),
+    status_(0)
+  {}
+  int charge() const {return charge_;}
+  int pdgId() const {return pdgId_;}
+  int status() const {return status_;}
+  ClassDef(Rivetpl, 1);
+private:
+  int charge_;
+  int pdgId_;
+  int status_;
+  void setcharge(const int value) {charge_ = value;}
+  void setpdgId(const int value) {pdgId_ = value;}
+  void setstatus(const int value) {status_ = value;}
+  void setLotentzVector(float pt, float eta, float phi, float e){SetPtEtaPhiE(pt, eta, phi, e);}
 };
 
 class Jet: public TLorentzVector{
@@ -857,6 +891,8 @@ public:
     trigger_L1_SingleIsoEG34_(0),
     trigger_L1_SingleIsoEG32er_(0),
     trigger_L1_SingleIsoEG32_(0),
+    trigger_PSColumn_(0),
+    trigger_El27ptmax_(0),
     filter_Flag_goodVertices_(0),
     filter_Flag_CSCTightHaloFilter_(0),
     filter_Flag_trkPOGFilters_(0),
@@ -1026,6 +1062,13 @@ public:
     PLs_status_(0),
     PLs_isoR3_(0),
     PLs_isoR4_(0),
+    RivetPLs_e_(0),
+    RivetPLs_pt_(0),
+    RivetPLs_eta_(0),
+    RivetPLs_phi_(0),
+    RivetPLs_charge_(0),
+    RivetPLs_pdgId_(0),
+    RivetPLs_status_(0),
     TTGens_e_(0),
     TTGens_pt_(0),
     TTGens_eta_(0),
@@ -1043,6 +1086,7 @@ public:
     are_trigger_loaded_(0), trigger_(),
     are_electrons_loaded_(0), electrons_(),
     are_rho_loaded_(0), rho_(),
+    are_RivetPLs_loaded_(0), RivetPLs_(),
     are_jets_loaded_(0), jets_(),
     are_muons_loaded_(0), muons_(),
     are_lhes_loaded_(0), lhes_(),
@@ -1074,6 +1118,7 @@ public:
     
     electrons_.clear();
     
+    RivetPLs_.clear();
     jets_.clear();
     muons_.clear();
     lhes_.clear();
@@ -1209,6 +1254,8 @@ public:
       tree_->SetBranchStatus("trigger.L1_SingleIsoEG34", 1); tree_->SetBranchAddress("trigger.L1_SingleIsoEG34", &trigger_L1_SingleIsoEG34_);
       tree_->SetBranchStatus("trigger.L1_SingleIsoEG32er", 1); tree_->SetBranchAddress("trigger.L1_SingleIsoEG32er", &trigger_L1_SingleIsoEG32er_);
       tree_->SetBranchStatus("trigger.L1_SingleIsoEG32", 1); tree_->SetBranchAddress("trigger.L1_SingleIsoEG32", &trigger_L1_SingleIsoEG32_);
+      tree_->SetBranchStatus("trigger.PSColumn", 1); tree_->SetBranchAddress("trigger.PSColumn", &trigger_PSColumn_);
+      tree_->SetBranchStatus("trigger.El27ptmax", 1); tree_->SetBranchAddress("trigger.El27ptmax", &trigger_El27ptmax_);
       are_trigger_loaded_ = true;
       tree_->GetEntry(current_entry_);
     }
@@ -1252,6 +1299,20 @@ public:
     if(!are_rho_loaded_){
       tree_->SetBranchStatus("rho.value", 1); tree_->SetBranchAddress("rho.value", &rho_value_);
       are_rho_loaded_ = true;
+      tree_->GetEntry(current_entry_);
+    }
+  }
+  
+  void loadRivetpls(){
+    if(!are_RivetPLs_loaded_){
+      tree_->SetBranchStatus("RivetPLs.e", 1); tree_->SetBranchAddress("RivetPLs.e", &RivetPLs_e_);
+      tree_->SetBranchStatus("RivetPLs.pt", 1); tree_->SetBranchAddress("RivetPLs.pt", &RivetPLs_pt_);
+      tree_->SetBranchStatus("RivetPLs.eta", 1); tree_->SetBranchAddress("RivetPLs.eta", &RivetPLs_eta_);
+      tree_->SetBranchStatus("RivetPLs.phi", 1); tree_->SetBranchAddress("RivetPLs.phi", &RivetPLs_phi_);
+      tree_->SetBranchStatus("RivetPLs.charge", 1); tree_->SetBranchAddress("RivetPLs.charge", &RivetPLs_charge_);
+      tree_->SetBranchStatus("RivetPLs.pdgId", 1); tree_->SetBranchAddress("RivetPLs.pdgId", &RivetPLs_pdgId_);
+      tree_->SetBranchStatus("RivetPLs.status", 1); tree_->SetBranchAddress("RivetPLs.status", &RivetPLs_status_);
+      are_RivetPLs_loaded_ = true;
       tree_->GetEntry(current_entry_);
     }
   }
@@ -1605,6 +1666,8 @@ public:
     obj.setL1_SingleIsoEG34(trigger_L1_SingleIsoEG34_);
     obj.setL1_SingleIsoEG32er(trigger_L1_SingleIsoEG32er_);
     obj.setL1_SingleIsoEG32(trigger_L1_SingleIsoEG32_);
+    obj.setPSColumn(trigger_PSColumn_);
+    obj.setEl27ptmax(trigger_El27ptmax_);
   
     return obj;
   }
@@ -1707,6 +1770,35 @@ public:
     obj.setvalue(rho_value_);
   
     return obj;
+  }
+  
+  const vector<Rivetpl>& RivetPLs(){
+    if(RivetPLs_.size() > 0) return RivetPLs_;
+    loadRivetpls();
+  	RivetPLs_.reserve(RivetPLs_e_->size());
+    auto it_RivetPLs_e_ = RivetPLs_e_->cbegin();
+    auto it_RivetPLs_pt_ = RivetPLs_pt_->cbegin();
+    auto it_RivetPLs_eta_ = RivetPLs_eta_->cbegin();
+    auto it_RivetPLs_phi_ = RivetPLs_phi_->cbegin();
+    auto it_RivetPLs_charge_ = RivetPLs_charge_->cbegin();
+    auto it_RivetPLs_pdgId_ = RivetPLs_pdgId_->cbegin();
+    auto it_RivetPLs_status_ = RivetPLs_status_->cbegin();
+    for(; it_RivetPLs_e_ != RivetPLs_e_->cend(); ){
+      Rivetpl obj;
+      obj.setcharge(*it_RivetPLs_charge_);
+      obj.setpdgId(*it_RivetPLs_pdgId_);
+      obj.setstatus(*it_RivetPLs_status_);
+      obj.setLotentzVector(*it_RivetPLs_pt_, *it_RivetPLs_eta_, *it_RivetPLs_phi_, *it_RivetPLs_e_);
+      RivetPLs_.push_back( obj );
+      ++it_RivetPLs_e_;
+      ++it_RivetPLs_pt_;
+      ++it_RivetPLs_eta_;
+      ++it_RivetPLs_phi_;
+      ++it_RivetPLs_charge_;
+      ++it_RivetPLs_pdgId_;
+      ++it_RivetPLs_status_;
+    }
+    return RivetPLs_;
   }
   
   const vector<Jet>& jets(){
@@ -2045,6 +2137,8 @@ private:
   Int_t trigger_L1_SingleIsoEG34_;
   Int_t trigger_L1_SingleIsoEG32er_;
   Int_t trigger_L1_SingleIsoEG32_;
+  Int_t trigger_PSColumn_;
+  Int_t trigger_El27ptmax_;
   Int_t filter_Flag_goodVertices_;
   Int_t filter_Flag_CSCTightHaloFilter_;
   Int_t filter_Flag_trkPOGFilters_;
@@ -2214,6 +2308,13 @@ private:
   vector<int> *PLs_status_;
   vector<float> *PLs_isoR3_;
   vector<float> *PLs_isoR4_;
+  vector<float> *RivetPLs_e_;
+  vector<float> *RivetPLs_pt_;
+  vector<float> *RivetPLs_eta_;
+  vector<float> *RivetPLs_phi_;
+  vector<int> *RivetPLs_charge_;
+  vector<int> *RivetPLs_pdgId_;
+  vector<int> *RivetPLs_status_;
   vector<float> *TTGens_e_;
   vector<float> *TTGens_pt_;
   vector<float> *TTGens_eta_;
@@ -2241,6 +2342,8 @@ private:
   vector<Electron> electrons_;
   bool are_rho_loaded_;
   Rho rho_;
+  bool are_RivetPLs_loaded_;
+  vector<Rivetpl> RivetPLs_;
   bool are_jets_loaded_;
   vector<Jet> jets_;
   bool are_muons_loaded_;

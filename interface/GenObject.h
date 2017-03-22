@@ -19,6 +19,9 @@ public:
 	GenObject(const Ttgen& gp) : TLorentzVector(gp), pdgId_(gp.pdgId()), status_(gp.status())
 	{
 	}
+	GenObject(const Rivetpl& gp) : TLorentzVector(gp), pdgId_(gp.pdgId()), status_(gp.status())
+	{
+	}
 //	GenObject(const Pstjet& gp) : TLorentzVector(gp), pdgId_(gp.pdgId()), status_(0)
 //	{
 //	}

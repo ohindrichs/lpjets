@@ -1,6 +1,6 @@
 #!/bin/bash
 DIR=JOBS14_pseudo
-VER=V30
+VER=V35b
 COMMAND2="../addjobs.py"
 #COMMAND="../resubmit.py R"
 #COMMAND=""

@@ -109,6 +109,7 @@ ttbar::ttbar(const std::string output_filename):
 	cBTaggingEff = CP.Get<string>("BTaggingEff");
 	cJetResolution = CP.Get<string>("JetResolution");
 	cJetResolutionSF = CP.Get<string>("JetResolutionSF");
+	cel27eff = CP.GetVector<double>("el27eff");
 	PSEUDOTOP = CP.Get<bool>("PSEUDOTOP");
 	LHCPS = CP.Get<bool>("LHCPS");
 	BTAGMODE = CP.Get<bool>("BTAGMODE");
@@ -637,6 +638,33 @@ void ttbar::SelectGenParticles(URStreamer& event)
 
 }
 
+void ttbar::SelectRivetPS(URStreamer& event)
+{
+	const vector<Rivetpl>& rivgens = event.RivetPLs();
+	if(rivgens.size() == 0) { return; }
+	for(size_t n = 0 ; n < 8 ; ++n){rivetobjs[n] = rivgens[n];}
+
+	if(rivetobjs[2].pdgId() == -11 || rivetobjs[2].pdgId() == -13)
+	{
+		psper.Init(&rivetobjs[6], &rivetobjs[7], &rivetobjs[5], &rivetobjs[1], &rivetobjs[2], rivetobjs[2].pdgId(), rivetobjs[3]);
+	}
+	else if(rivetobjs[6].pdgId() == 11 || rivetobjs[6].pdgId() == 13)
+	{
+		psper.Init(&rivetobjs[2], &rivetobjs[3], &rivetobjs[1], &rivetobjs[5], &rivetobjs[6], rivetobjs[6].pdgId(), rivetobjs[7]);
+	}
+	vector<TLorentzVector*> genaddjets;
+	for(size_t j = 8 ; j < rivgens.size() ;  ++j)
+	{
+		const Rivetpl& rp = rivgens[j]; 	
+		if(abs(rp.pdgId()) < 6)
+		{
+			sgenparticles.push_back(rp);
+			genaddjets.push_back(&(sgenparticles.back()));
+		}
+	}
+	psper.SetAdditionalJets(genaddjets, [](TLorentzVector* j){return true;});
+}
+
 void ttbar::SelectPseudoTopLHC(URStreamer& event)
 {
 	const vector<Pl>& pls = event.PLs();
@@ -1162,6 +1190,10 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 			}
 			if(rightper.IsComplete()){truth1d["found"]->Fill(6.5, weight);} 
 			truth1d["found"]->Fill(7.5, weight);
+			TVector2 metcorrwj(0.,0.);
+			if(rightper.WJa() != nullptr) {dynamic_cast<IDJet*>(rightper.WJa())->ApplySF(2, metcorrwj);}
+			if(rightper.WJb() != nullptr) {dynamic_cast<IDJet*>(rightper.WJb())->ApplySF(2, metcorrwj);}
+			met.Update(metcorrwj);
 	}
 }
 
@@ -1217,6 +1249,8 @@ void ttbar::ttanalysis(URStreamer& event)
 		if(mediumelectrons.size() == 1)
 		{
 			weight *= elsfhist->GetBinContent(elsfhist->GetXaxis()->FindFixBin(dynamic_cast<IDElectron*>(lep)->SCeta()), elsfhist->GetYaxis()->FindFixBin(Min(lep->Pt(), 170.)));
+			int l1ptmax = event.trigger().El27ptmax();
+			if(l1ptmax != -1 && l1ptmax < 34) {weight*=cel27eff[(l1ptmax-24)/2];}
 		}
 
 	}
@@ -1325,7 +1359,6 @@ void ttbar::ttanalysis(URStreamer& event)
 		//cout << (rightper.WJa()->Pt() < minbjpt || rightper.WJb()->Pt() < minbjpt) << endl;
 	}
 
-
 	bestper.Reset();
 	if(LHCPS)
 	{
@@ -1382,10 +1415,10 @@ void ttbar::ttanalysis(URStreamer& event)
 	{
 		for(size_t j = nbtaglocal ; j < i ; ++j)
 		{
-			TVector2 metcor(0.,0.);
-			reducedjets[i]->ApplySF(2, metcor);
-			reducedjets[j]->ApplySF(2, metcor);
-			met.Update(metcor);
+		//	TVector2 metcor(0.,0.);
+		//	reducedjets[i]->ApplySF(2, metcor);
+		//	reducedjets[j]->ApplySF(2, metcor);
+		//	met.Update(metcor);
 			for(size_t k = 0 ; k < (nbtaglocal == 2 ? 2 : reducedjets.size()) ; ++k)
 			{
 				if(i == k || j == k) continue;
@@ -1456,10 +1489,10 @@ void ttbar::ttanalysis(URStreamer& event)
 					}
 				}
 			}
-			TVector2 metcorback(0.,0.);
-			reducedjets[i]->ApplySF(1, metcorback);
-			reducedjets[j]->ApplySF(1, metcorback);
-			met.Update(metcorback);
+		//	TVector2 metcorback(0.,0.);
+		//	reducedjets[i]->ApplySF(1, metcorback);
+		//	reducedjets[j]->ApplySF(1, metcorback);
+		//	met.Update(metcorback);
 		}
 	}
 	if(bestper.Prob() > 1E9){return;}
@@ -1809,7 +1842,8 @@ void ttbar::analyze()
 			}
 			else
 			{
-				SelectPseudoTop(event);
+				//SelectPseudoTop(event);
+				SelectRivetPS(event);
 			}
 		}
 
@@ -1960,7 +1994,7 @@ void ttbar::analyze()
 				 isDA == 0
 				 && (
 				  event.trigger().HLT_IsoMu24() == 1 || event.trigger().HLT_IsoTkMu24() == 1
-				  || (event.trigger().L1_SingleIsoEG34() == 1 && event.trigger().HLT_Ele27_WPTight_Gsf() == 1)
+				  || (event.trigger().El27ptmax() != -1 && event.trigger().HLT_Ele27_WPTight_Gsf() == 1)
 				 )
 				) ||
 				(
@@ -1972,7 +2006,7 @@ void ttbar::analyze()
 				(
 				 isDA == 11 &&
 					(
-						event.trigger().HLT_IsoMu24() == -1 && event.trigger().HLT_IsoTkMu24() == -1 && event.trigger().L1_SingleIsoEG34() == 1 && event.trigger().HLT_Ele27_WPTight_Gsf() == 1 //2016
+						event.trigger().HLT_IsoMu24() == -1 && event.trigger().HLT_IsoTkMu24() == -1 && event.trigger().El27ptmax() != -1 && event.trigger().HLT_Ele27_WPTight_Gsf() == 1 //2016
 				)
 			)
 		)

@@ -46,6 +46,7 @@ class ttbar : public AnalyzerBase
 		bool FULLLEP;
 		bool SEMILEPACC;
 		GenObject gps[8];
+		GenObject rivetobjs[8];
 		list<GenObject> sgenparticles;
 	  	vector<GenObject*> genalljets;
 	  	vector<GenObject*> genbjets;
@@ -179,6 +180,7 @@ class ttbar : public AnalyzerBase
 		string cJetEnergyUncertainty;
 		string cJetResolution;
 		string cJetResolutionSF;
+		vector<double> cel27eff;
 		bool TTMC;
 		bool HERWIGPP;
 		bool PYTHIA6;
@@ -249,6 +251,7 @@ class ttbar : public AnalyzerBase
 		virtual void analyze();
 
 		void SelectGenParticles(URStreamer& event);
+		void SelectRivetPS(URStreamer& event);
 		void SelectPseudoTopLHC(URStreamer& event);
 		void SelectPseudoTop(URStreamer& event);
 		void SelectRecoParticles(URStreamer& event);
