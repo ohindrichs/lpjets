@@ -47,13 +47,13 @@ transferfiles_config = ', '.join(transferfiles)
 
 for sf in samplefiles:
 	if 'QCD' in sf or 'DYJet' in sf or 'WJet' in sf:
-		filesperjob = 30
-	elif 'DATA' in sf:
 		filesperjob = 60
+	elif 'DATA' in sf:
+		filesperjob = 80
 	elif 'Hpp' in sf:
 		filesperjob = 10
 	elif 'tt_' in sf:
-		filesperjob = 20
+		filesperjob = 10
 	else:
 		filesperjob = 20
 

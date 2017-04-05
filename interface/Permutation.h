@@ -287,6 +287,12 @@ class Permutation
 			//}
 			return drmin;
 		}
+		double DRminTop(const TLorentzVector* jet)
+		{
+			double drhad = jet->DeltaR(THad());
+			double drlep = jet->DeltaR(TLep());
+			return drlep < drhad ? drlep : drhad;
+		}
 };
 
 bool operator<(const Permutation& A, const Permutation& B);

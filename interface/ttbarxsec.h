@@ -21,6 +21,7 @@
 #include "BtagEff.h"
 #include "JetScaler.h"
 #include "BTagWeight.h"
+#include "BHadronDecayWeights.h"
 
 #include <TGraphErrors.h>
 
@@ -80,6 +81,8 @@ class ttbar : public AnalyzerBase
 		vector<IDElectron*> mediumelectrons;
 		IDMet met;
 
+		TLorentzVector* lep = nullptr;
+		int leppdgid = 0;
 		//hists
 		TH1DCollection gen1d;
 		TH2DCollection gen2d;
@@ -170,6 +173,10 @@ class ttbar : public AnalyzerBase
 		double ctopptweight;
 		double ctoprapweight;
 		double cttptweight;
+		double cbdecay = 0.;
+		double cbfrag = 0.;
+		double cbsplitting = 1.;
+		double ccsplitting = 1.;
 		int cfacscale;
 		int crenscale;
 		int chdamp;
@@ -197,6 +204,9 @@ class ttbar : public AnalyzerBase
 		double weight;
 		double mcweight;
 		double puweight;
+
+		BHadronDecayWeights bdecayweights;
+		BFragWeights bfragweights;
 
 		//binning vectors
 		vector<double> topptbins;
@@ -257,6 +267,7 @@ class ttbar : public AnalyzerBase
 		void SelectRecoParticles(URStreamer& event);
 		void AddGenJetSelection(URStreamer& event);
 		void ttanalysis(URStreamer& event);
+		void reconstruction();
 
 		static void setOptions() {}
 };

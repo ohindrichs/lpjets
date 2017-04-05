@@ -40,7 +40,7 @@ class IDJet : public Jet, public MCMatchable
 	IDJet(const Jet el):
 		Jet(el),
 		MCMatchable(),
-		m_sf(3,1.)
+		m_sf(4,1.)
 		{
 		}
 	int flavor() const {return (match()) ? match()->pdgId() : partonFlavour();}

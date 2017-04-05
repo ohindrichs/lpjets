@@ -29,6 +29,10 @@ void JetScaler::InitMCrescale(ttbar* an, const string rescalefilename)
 	if(an->FSRDOWN){mcname = "fsrdown";}
 	if(an->TUNEUP){mcname = "tuneup";}
 	if(an->TUNEDOWN){mcname = "tunedown";}
+	if(an->cbfrag == -1){mcname = "bfragdown";}
+	if(an->cbfrag == 1){mcname = "bfragup";}
+	if(an->cbdecay == -1){mcname = "bdecaydown";}
+	if(an->cbdecay == 1){mcname = "bdecayup";}
 	if(mcname != "")
 	{
 		TDirectory* dir = gDirectory;
@@ -43,7 +47,20 @@ void JetScaler::InitMCrescale(ttbar* an, const string rescalefilename)
 }
 
 void JetScaler::Init(const string& filename, const string& type)
-{
+{	
+	vector<TH1D*>* ErrP = &HptsP;
+	vector<TH1D*>* ErrM = &HptsM;
+	if(type == "FlavorQCD")
+	{
+		ErrP = &HptsPqcd;
+		ErrM = &HptsMqcd;
+	}
+	if(type == "FlavorPureBottom")
+	{
+		ErrP = &HptsPb;
+		ErrM = &HptsMb;
+	}
+
 	TDirectory* dir = gDirectory;
 	//gROOT->cd();
 	fstream fs(filename.c_str(), fstream::in);
@@ -88,12 +105,12 @@ void JetScaler::Init(const string& filename, const string& type)
 			}
 			stringstream name;
 			name << "jeterror_" << type << "_" << selected-2; 
-			HptsM.push_back(new TH1D((name.str()+"M").c_str(), (name.str()+"M").c_str(), pts.size()-1, pts.data()));
-			HptsP.push_back(new TH1D((name.str()+"P").c_str(), (name.str()+"P").c_str(), pts.size()-1, pts.data()));
+			ErrM->push_back(new TH1D((name.str()+"M").c_str(), (name.str()+"M").c_str(), pts.size()-1, pts.data()));
+			ErrP->push_back(new TH1D((name.str()+"P").c_str(), (name.str()+"P").c_str(), pts.size()-1, pts.data()));
 			for(size_t b = 0 ; b < pts.size()-1 ; ++b)
 			{
-				HptsM.back()->SetBinContent(b+1, errm[b]);
-				HptsP.back()->SetBinContent(b+1, errp[b]);
+				ErrM->back()->SetBinContent(b+1, errm[b]);
+				ErrP->back()->SetBinContent(b+1, errp[b]);
 			}
 		}
 	}
@@ -179,10 +196,11 @@ double JetScaler::GetScale(const IDJet& jet, double rho, double sigmascale)
 //	sf = gRandom->Gaus(1., resolution*sqrt(s*s-1.));
 
 	//MC specific correction 
+	bool BJET = (find_if(AN->genbjets.begin(), AN->genbjets.end(), [&](GenObject* bp){return jet.DeltaR(*bp) < 0.3;}) != AN->genbjets.end());
 	if(hlB != nullptr)
 	{
 		double mccorr = 1.;
-		if(find_if(AN->genbjets.begin(), AN->genbjets.end(), [&](GenObject* bp){return jet.DeltaR(*bp) < 0.3;}) != AN->genbjets.end())
+		if(BJET)
 		{
 			if(Abs(jet.Eta()) < 1.5)
 			{
@@ -211,11 +229,13 @@ double JetScaler::GetScale(const IDJet& jet, double rho, double sigmascale)
 	int ptbin = HptsP[etabin]->FindFixBin(jet.Pt());
 	if(sigmascale >= 0)
 	{
-		return(sf + sigmascale*HptsP[etabin]->GetBinContent(ptbin));
+		if(BJET) return(sf + sigmascale*sqrt(pow(HptsP[etabin]->GetBinContent(ptbin), 2) + pow(HptsPb[etabin]->GetBinContent(ptbin), 2)));
+		return(sf + sigmascale*sqrt(pow(HptsP[etabin]->GetBinContent(ptbin), 2) + pow(HptsPqcd[etabin]->GetBinContent(ptbin), 2)));
 	}
 	else
 	{
-		return(sf + sigmascale*HptsM[etabin]->GetBinContent(ptbin));
+		if(BJET) return(sf + sigmascale*sqrt(pow(HptsM[etabin]->GetBinContent(ptbin), 2) + pow(HptsMb[etabin]->GetBinContent(ptbin), 2)));
+		return(sf + sigmascale*sqrt(pow(HptsM[etabin]->GetBinContent(ptbin), 2) + pow(HptsMqcd[etabin]->GetBinContent(ptbin), 2)));
 	}
 }
 

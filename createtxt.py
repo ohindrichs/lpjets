@@ -63,7 +63,6 @@ def collectfiles(dirname):
 setnames = {}
 
 setnames['DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'] = 'DYJets.txt'
-#setnames['WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8'] = 'WJets.txt'
 setnames['WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'] = 'WJets.txt'
 setnames['QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8'] = 'QCDEM50.txt'
 setnames['QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8'] = 'QCDEM80.txt'
@@ -82,12 +81,10 @@ setnames['QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8'] = 'QCDMu800
 setnames['QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8'] = 'QCDMu1000.txt'
 setnames['QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8'] = 'QCDMuInf.txt'
 setnames['ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1'] = 'STs.txt'
-#setnames['ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1'] = 'STt.txt'
 setnames['ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1'] = 'STt_topbar.txt'
 setnames['ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1'] = 'STt_top.txt'
 setnames['ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1'] = 'Wtbar.txt'
 setnames['ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1'] = 'Wt.txt'
-#setnames['TT_TuneCUETP8M1_13TeV-powheg-pythia8'] = 'tt_PowhegP8.txt'
 setnames['TT_TuneCUETP8M2T4_13TeV-powheg-pythia8'] = 'tt_PowhegP8.txt'
 setnames['TT_TuneCUETP8M1_13TeV-powheg-scaledown-pythia8'] = 'tt_scaledown_PowhegP8.txt'
 setnames['TT_TuneCUETP8M1_13TeV-powheg-scaleup-pythia8'] = 'tt_scaleup_PowhegP8.txt'

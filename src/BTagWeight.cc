@@ -78,6 +78,10 @@ void BTagWeight::Init(ttbar* an, const string& csvfilename, const string& efffil
 	if(an->FSRDOWN){mcname = "fsrdown";}
 	if(an->TUNEUP){mcname = "tuneup";}
 	if(an->TUNEDOWN){mcname = "tunedown";}
+	if(an->cbfrag == -1.){mcname = "bfragdown";}
+	if(an->cbfrag == 1.){mcname = "bfragup";}
+	if(an->cbdecay == -1.){mcname = "bdecaydown";}
+	if(an->cbdecay == 1.){mcname = "bdecayup";}
 	hbeffL = dynamic_cast<TH1D*>(probfile->Get((mcname + "_L_B").c_str()));
 	hceffL = dynamic_cast<TH1D*>(probfile->Get((mcname + "_L_C").c_str()));
 	hleffL = dynamic_cast<TH1D*>(probfile->Get((mcname + "_L_L").c_str()));
