@@ -53,7 +53,7 @@ for sf in samplefiles:
 	elif 'Hpp' in sf:
 		filesperjob = 10
 	elif 'tt_' in sf:
-		filesperjob = 10
+		filesperjob = 30
 	else:
 		filesperjob = 20
 

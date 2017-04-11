@@ -61,6 +61,8 @@ class ttbar : public AnalyzerBase
 		TLorentzVector gentbar;
 		TLorentzVector gentlep;
 		TLorentzVector genthad;
+		double genlepiso;
+		double genphiso;
 
 
 		Permutation genallper;
@@ -170,9 +172,10 @@ class ttbar : public AnalyzerBase
 		string cBTaggingEff;
 		int cjetres;
 		double csigmamet;
-		double ctopptweight;
-		double ctoprapweight;
-		double cttptweight;
+		double ctopptweight = 0.;
+		double ctoprapweight = 0.;
+		double cttptweight = 0.;
+		double cjetptweight = 0.;
 		double cbdecay = 0.;
 		double cbfrag = 0.;
 		double cbsplitting = 1.;

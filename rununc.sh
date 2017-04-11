@@ -90,6 +90,10 @@ cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
 ./jobsub ${TYP}_ttptdown_${VER} ttbarxsec.exe ttbarxsec.cfg
 ./updateconfig.py ttptweight 1
 ./jobsub ${TYP}_ttptup_${VER} ttbarxsec.exe ttbarxsec.cfg
+./updateconfig.py jetptweight 1
+./jobsub ${TYP}_jetptup_${VER} ttbarxsec.exe ttbarxsec.cfg
+./updateconfig.py jetptweight -1
+./jobsub ${TYP}_jetptdown_${VER} ttbarxsec.exe ttbarxsec.cfg
 ./updateconfig.py renscale -1
 ./jobsub ${TYP}_rsdown_${VER} ttbarxsec.exe ttbarxsec.cfg
 ./updateconfig.py renscale 1
