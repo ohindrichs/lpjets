@@ -53,6 +53,8 @@ class ttbar : public AnalyzerBase
 	  	vector<GenObject*> genbjets;
 	  	vector<GenObject*> gencjets;
 	  	vector<GenObject*> genljets;
+	  	vector<GenObject*> plleptons;
+	  	vector<GenObject*> plphotons;
 		TLorentzVector gentq;
 		TLorentzVector gentqbar;
 		TLorentzVector gentqlep;
@@ -61,9 +63,6 @@ class ttbar : public AnalyzerBase
 		TLorentzVector gentbar;
 		TLorentzVector gentlep;
 		TLorentzVector genthad;
-		double genlepiso;
-		double genphiso;
-
 
 		Permutation genallper;
 		Permutation psper;
@@ -167,6 +166,7 @@ class ttbar : public AnalyzerBase
 		double cpjetsep;
 		double csigmajet;
 		double csigmajetwj;
+		double cscalejetwj;
 		string cjecuncertainty;
 		string cBTaggingSF;
 		string cBTaggingEff;
@@ -228,6 +228,7 @@ class ttbar : public AnalyzerBase
 		vector<vector<double> > jetptbins;
 		vector<vector<double> > jetetabins;
 		vector<vector<double> > jetdrbins;
+		vector<vector<double> > jetdrtopbins;
 		vector<string> jetnames = {"b_{l}", "b_{h}", "j_{W1}" , "j_{W2}", "j_{1}", "j_{2}","j_{3}", "j_{4}"};
 
 		TH1D* puhist;

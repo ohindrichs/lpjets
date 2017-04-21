@@ -43,8 +43,10 @@ void TTBarPlots::Init(ttbar* analysis)
 		plot1d.AddHist(ss.str()+"pt_fb", an->jetptbins[j], "p_{T}("+an->jetnames[j]+") [GeV]", "Events");
 		plot1d.AddHist(ss.str()+"eta", 120, -2.4, 2.4, "#eta("+an->jetnames[j]+")", "Events");
 		plot1d.AddHist(ss.str()+"eta_fb", an->jetetabins[j], "|#eta("+an->jetnames[j]+")|", "Events");
-		plot1d.AddHist(ss.str()+"dr", 120, 0., 6., "#DeltaR_{t#bar{t}}("+an->jetnames[j]+")", "Events");
-		plot1d.AddHist(ss.str()+"dr_fb", an->jetdrbins[j], "#DeltaR_{t#bar{t}}("+an->jetnames[j]+")", "Events");
+		plot1d.AddHist(ss.str()+"dr", 120, 0., 6., "#DeltaR_{j_{t}}("+an->jetnames[j]+")", "Events");
+		plot1d.AddHist(ss.str()+"dr_fb", an->jetdrbins[j], "#DeltaR_{j_{t}}("+an->jetnames[j]+")", "Events");
+		plot1d.AddHist(ss.str()+"drtop", 120, 0., 6., "#DeltaR_{t}("+an->jetnames[j]+")", "Events");
+		plot1d.AddHist(ss.str()+"drtop_fb", an->jetdrtopbins[j], "#DeltaR_{t}("+an->jetnames[j]+")", "Events");
 	}
 	plot1d.AddHist("DPhiMET_Nu", 100, 0, 3, "#Delta#Phi(#nu, MET)", "Events");
 	plot2d.AddHist("METvsDPhiMET_Nu", 120, 0, 1200, 100, 0, 3, "MET [GeV]", "#Delta#Phi(#nu, MET)");
@@ -75,6 +77,8 @@ void TTBarPlots::Init(ttbar* analysis)
 	plot2d.AddHist("massW_tty", 50, 0, 150, an->ttybins, "M(W) [GeV]", "");
 	plot2d.AddHist("masst_njet", 50, 50, 300, an->jetbins, "M(t_{h}) [GeV]", "");
 	plot2d.AddHist("massW_njet", 50, 0, 150, an->jetbins, "M(W) [GeV]", "");
+	plot2d.AddHist("massW_wjetmaxpt", 50, 0, 150, 100, 30, 530, "M(W) [GeV]", "");
+	plot2d.AddHist("massW_wjetavgpt", 50, 0, 150, 100, 30, 530, "M(W) [GeV]", "");
 	for(int jn : jetbins)
 	{
 		stringstream jb;
@@ -159,6 +163,8 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 		plot1d[ss.str()+"eta_fb"]->Fill(abs(jet->Eta()), weight);
 		plot1d[ss.str()+"dr"]->Fill(per.DRminTTjets(jet), weight);
 		plot1d[ss.str()+"dr_fb"]->Fill(per.DRminTTjets(jet), weight);
+		plot1d[ss.str()+"drtop"]->Fill(per.DRminTop(jet), weight);
+		plot1d[ss.str()+"drtop_fb"]->Fill(per.DRminTop(jet), weight);
 	}
 	plot2d["METvsChi"]->Fill(an->met.Pt(), testb, weight);
 	plot1d["DPhiMET_Nu"]->Fill(Abs(per.Nu().DeltaPhi(an->met)), weight);
@@ -182,6 +188,8 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 	plot2d["massW_tty"]->Fill(per.WHad().M(), abs(per.TT().Rapidity()),weight);
 	plot2d["masst_njet"]->Fill(per.THad().M(), addjets.size(), weight);
 	plot2d["massW_njet"]->Fill(per.WHad().M(), addjets.size(), weight);
+	plot2d["massW_wjetmaxpt"]->Fill(per.WHad().M(), per.WJPtmax()->Pt(), weight);
+	plot2d["massW_wjetavgpt"]->Fill(per.WHad().M(), 0.5*(per.WJPtmax()->Pt()+per.WJPtmin()->Pt()), weight);
 	for(int jn : jetbins)
 	{
 		stringstream jb;
