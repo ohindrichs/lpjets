@@ -172,6 +172,7 @@ class ttbar : public AnalyzerBase
 		string cBTaggingEff;
 		int cjetres;
 		double csigmamet;
+		double csigmalep;
 		double ctopptweight = 0.;
 		double ctoprapweight = 0.;
 		double cttptweight = 0.;
@@ -272,6 +273,7 @@ class ttbar : public AnalyzerBase
 		void AddGenJetSelection(URStreamer& event);
 		void ttanalysis(URStreamer& event);
 		void reconstruction();
+		double lepeffweight(TLorentzVector* lep, URStreamer& event);
 
 		static void setOptions() {}
 };

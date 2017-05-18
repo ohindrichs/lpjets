@@ -140,6 +140,7 @@ ttbar::ttbar(const std::string output_filename):
 	cjecuncertainty = CP.Get<string>("jecuncertainty");
 	cjetres = CP.Get<int>("jetres");
 	csigmamet = CP.Get<double>("sigmamet");
+	csigmalep = CP.Get<double>("sigmalep");
 	ctopptweight = CP.Get<double>("topptweight");
 	ctoprapweight = CP.Get<double>("toprapweight");
 	cttptweight = CP.Get<double>("ttptweight");
@@ -205,11 +206,14 @@ ttbar::ttbar(const std::string output_filename):
 //	dybins = {-2.0, -1.5, -1., -0.5, 0., 0.5, 1.0, 1.5, 2.0};
 //	nobins = {0., 13000.};
 
-	topptbins = {0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 430.0, 500.0, 800.0};
-	topybins = {0.0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1.05, 1.2, 1.35, 1.5, 1.65, 1.8, 1.95, 2.15, 2.6};
-	ttmbins = {300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 1400.0, 2000.0},
+	//topptbins = {0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 430.0, 500.0, 800.0};
+	topptbins = {0.0, 40.0, 80.0, 120.0, 160.0, 200.0, 240.0, 280.0, 330.0, 380.0, 430.0, 500.0, 800.0};
+	topybins = {0.0, 0.2, 0.4, 0.6, 0.8, 1., 1.2, 1.4, 1.6, 1.8, 2.0, 2.5};
+	//ttmbins = {300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 1400.0, 2000.0},
+	ttmbins = {300.0, 360.0, 430.0, 500.0, 580.0, 680.0, 800.0, 1000.0, 1200.0, 1500.0, 2500.0},
 	ttybins = {0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.4};
-	ttptbins = {0.0, 35.0, 70.0, 110.0, 165.0, 230.0, 300.0, 370.0, 450.0, 550.0};
+	//ttptbins = {0.0, 35.0, 70.0, 110.0, 165.0, 230.0, 300.0, 370.0, 450.0, 550.0};
+	ttptbins = {0.0, 40.0, 80.0, 150.0, 220.0, 300.0, 380.0, 500.0, 1000.0};
 	metbins = {0.0, 30.0, 45.0, 60.0, 80.0, 120.0, 580.0};
 	htbins = {120.0, 180.0, 240.0, 300.0, 360.0, 420.0, 480.0, 540.0, 600.0, 700.0, 800.0, 900.0, 1100.0, 1500.0, 2500.0};
 	evtmassbins = {300., 400., 500., 600., 700., 800., 900., 1000., 1200.0, 1500.0, 2000., 2500., 5500.};
@@ -237,15 +241,21 @@ void ttbar::begin()
 	gen1d.AddHist("ty", 500, 0, 10, "y(t)", "Events");
 	gen1d.AddHist("ttpt", 500, 0, 1000, "p_{T}(t#bar{t}) [GeV]", "Events");
 	gen1d.AddHist("tty", 500, 0, 10, "y(t#bar{t})", "Events");
-	gen2d.AddHist("pllepiso", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
 	gen2d.AddHist("plmuiso", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
+	gen2d.AddHist("plmuisoprompt", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
+	gen2d.AddHist("plmuisott", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
 	gen2d.AddHist("pleliso", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
-	gen2d.AddHist("pllepisoprompt", 100, 0, 500, 200, 0, 2, "lepiso prompt", "Events");
+	gen2d.AddHist("plelisoprompt", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
+	gen2d.AddHist("plelisott", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
 	gen2d.AddHist("plphiso", 100, 0, 500,200, 0, 2, "phiso", "Events");
+	gen2d.AddHist("plphisoprompt", 100, 0, 500,200, 0, 2, "phiso", "Events");
 	gen2d.AddHist("plphisoreco", 100, 0, 500,200, 0, 2, "phiso", "Events");
-	gen2d.AddHist("pllepisoreco", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
 	gen2d.AddHist("plmuisoreco", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
+	gen2d.AddHist("plmuisopromptreco", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
+	gen2d.AddHist("plmuisottreco", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
 	gen2d.AddHist("plelisoreco", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
+	gen2d.AddHist("plelisopromptreco", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
+	gen2d.AddHist("plelisottreco", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
 	gen2d.AddHist("met_mt", 500, 0, 500, 500, 0, 500, "met", "mt");
     ttp_genall.Init(this);
     ttp_genacc.Init(this);
@@ -364,58 +374,58 @@ void ttbar::begin()
 	response2d.AddMatrix("ttm_dy", dybins, ttmbins_large, dybins, ttmbins_large);
 
 	vector< vector<double> > bins_njet_thadpt = {
-	{0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 450.0, 800.0},
-	{0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 450.0, 800.0},
-	{0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 450.0, 800.0},
-	{0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 450.0, 800.0}
+	{0.0, 40.0, 80.0, 120.0, 160.0, 200.0, 240.0, 280.0, 330.0, 380.0, 450.0, 800.0},
+	{0.0, 40.0, 80.0, 120.0, 160.0, 200.0, 240.0, 280.0, 330.0, 380.0, 450.0, 800.0},
+	{0.0, 40.0, 80.0, 120.0, 160.0, 200.0, 240.0, 280.0, 330.0, 380.0, 450.0, 800.0},
+	{0.0, 40.0, 80.0, 120.0, 160.0, 200.0, 240.0, 280.0, 330.0, 380.0, 450.0, 800.0}
 	};
 	response2dvar.AddMatrix("njet+thadpt", jetbins_large, bins_njet_thadpt, true, false);
 
 	vector< vector<double> > bins_njet_ttpt = {
-	{0.0, 35.0, 70.0, 110.0, 165.0, 230.0, 300.0, 550.0},
-	{0.0, 35.0, 70.0, 110.0, 165.0, 230.0, 300.0, 370.0, 450.0, 550.0},
-	{0.0, 35.0, 70.0, 110.0, 165.0, 230.0, 300.0, 370.0, 450.0, 550.0},
-	{0.0, 35.0, 70.0, 110.0, 165.0, 230.0, 300.0, 370.0, 450.0, 550.0}
+	{0.0, 40.0, 80.0, 150.0, 220.0, 300.0, 1000.0},
+	{0.0, 40.0, 80.0, 150.0, 220.0, 300.0, 380.0, 1000.0},
+	{0.0, 40.0, 80.0, 150.0, 220.0, 300.0, 380.0, 500.0, 1000.0},
+	{0.0, 40.0, 80.0, 150.0, 220.0, 300.0, 380.0, 500.0, 1000.0}
 	};
 	response2dvar.AddMatrix("njet+ttpt", jetbins_large, bins_njet_ttpt, true, false);
 
 	vector< vector<double> > bins_njet_ttm = {
-	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 2000.0},
-	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 2000.0},
-	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 2000.0},
-	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 2000.0}
+	{300.0, 360.0, 430.0, 500.0, 580.0, 680.0, 800.0, 1000.0, 1200.0, 2000.0},
+	{300.0, 360.0, 430.0, 500.0, 580.0, 680.0, 800.0, 1000.0, 1200.0, 2000.0},
+	{300.0, 360.0, 430.0, 500.0, 580.0, 680.0, 800.0, 1000.0, 1200.0, 2000.0},
+	{300.0, 360.0, 430.0, 500.0, 580.0, 680.0, 800.0, 1000.0, 1200.0, 2000.0}
 	};
 	response2dvar.AddMatrix("njet+ttm", jetbins_large, bins_njet_ttm, true, false);
 
 	vector< vector<double> > bins_thady_thadpt = {
-	{0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 450.0, 800.0},
-	{0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 450.0, 800.0},
-	{0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 450.0, 800.0},
-	{0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 450.0, 800.0}
+	{0.0, 40.0, 80.0, 120.0, 160.0, 200.0, 240.0, 280.0, 330.0, 380.0, 450.0, 800.0},
+	{0.0, 40.0, 80.0, 120.0, 160.0, 200.0, 240.0, 280.0, 330.0, 380.0, 450.0, 800.0},
+	{0.0, 40.0, 80.0, 120.0, 160.0, 200.0, 240.0, 280.0, 330.0, 380.0, 450.0, 800.0},
+	{0.0, 40.0, 80.0, 120.0, 160.0, 200.0, 240.0, 280.0, 330.0, 380.0, 450.0, 800.0}
 	};
 	response2dvar.AddMatrix("thady+thadpt", topybins_large, bins_thady_thadpt, false, false);
 
 	vector< vector<double> > bins_thadpt_ttm = {
-	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 2000.0},
-	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 2000.0},
-	{300.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 2000.0},
-	{300.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 2000.0}
+	{300.0, 360.0, 430.0, 500.0, 580.0, 680.0, 800.0, 1000.0, 2000.0},
+	{300.0, 360.0, 430.0, 500.0, 580.0, 680.0, 800.0, 1000.0, 2000.0},
+	{300.0, 430.0, 500.0, 580.0, 680.0, 800.0, 1000.0, 1200., 2000.0},
+	{300.0, 430.0, 500.0, 580.0, 680.0, 800.0, 1000.0, 1200., 2000.0}
 	};
 	response2dvar.AddMatrix("thadpt+ttm", topptbins_large, bins_thadpt_ttm, false, false);
 
 	vector< vector<double> > bins_ttpt_ttm = {
-	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 2000.0},
-	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 2000.0},
-	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 2000.0},
-	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 1200.0, 2000.0}
+	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 2000.0},
+	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 2000.0},
+	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 2000.0},
+	{300.0, 350.0, 420.0, 500.0, 580.0, 680.0, 780.0, 900.0, 1100.0, 2000.0}
 	};
 	response2dvar.AddMatrix("ttpt+ttm", ttptbins_large, bins_ttpt_ttm, false, false);
 
 	vector< vector<double> > bins_ttpt_thadpt = {
-	{0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 450.0, 800.0},
-	{0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 450.0, 800.0},
-	{0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 450.0, 800.0},
-	{0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 250.0, 290.0, 335.0, 380.0, 450.0, 800.0}
+	{0.0, 40.0, 80.0, 120.0, 160.0, 200.0, 240.0, 280.0, 330.0, 380.0, 450.0, 800.0},
+	{0.0, 40.0, 80.0, 120.0, 160.0, 200.0, 240.0, 280.0, 330.0, 380.0, 450.0, 800.0},
+	{0.0, 40.0, 80.0, 120.0, 160.0, 200.0, 240.0, 280.0, 330.0, 380.0, 450.0, 800.0},
+	{0.0, 40.0, 80.0, 120.0, 160.0, 200.0, 240.0, 280.0, 330.0, 380.0, 450.0, 800.0}
 	};
 	response2dvar.AddMatrix("ttpt+thadpt", ttptbins_large, bins_ttpt_thadpt, false, false);
 
@@ -438,15 +448,25 @@ void ttbar::begin()
 
 	alljetbins = {-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5};
 	jetptbins = {
-	{35., 50., 75., 100., 150., 200., 500.},
-	{30., 50., 75., 100., 150., 200., 500.},
-	{35., 50., 75., 100., 150., 200., 500.},
-	{30., 50., 75., 100., 300.},
-	{30., 50., 75., 100., 150., 200., 300., 500.},
-	{30., 50., 75., 100., 150., 300.},
+	{30., 50., 75., 100., 150., 200., 350.},
+	{30., 50., 75., 100., 150., 200., 350.},
+	{30., 50., 75., 100., 150., 200., 350.},
+	{30., 50., 75., 100., 250.},
+	{30., 50., 75., 100., 125., 150., 175., 200., 250., 320., 500.},
+	{30., 50., 75., 100., 125., 150., 180., 350.},
 	{30., 50., 75., 100., 250.},
 	{30., 50., 75., 100., 200.}};
 	response2dvar.AddMatrix("jet+jetpt", alljetbins, jetptbins, false, false);
+	jetptbins = {
+	{30., 50., 75., 100., 150., 200., 350.,351},
+	{30., 50., 75., 100., 150., 200., 350.,351},
+	{30., 50., 75., 100., 150., 200., 350.,351},
+	{30., 50., 75., 100., 150.,151},
+	{30., 50., 75., 100., 125., 150., 175., 200., 250., 320., 400.,401},
+	{30., 50., 75., 100., 125., 150., 180., 350.,351},
+	{30., 50., 75., 100., 200.,201},
+	{30., 50., 75., 100., 120.,121}};
+	response2dvar.AddMatrix("jet+jetptOF", alljetbins, jetptbins, false, true);
 	jetetabins = {
 	{0., 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5},
 	{0., 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5},
@@ -515,6 +535,7 @@ void ttbar::begin()
 		pdfunc->Add1dHist("pdfunc_ttm+tty", response2dvar.GetNBins("ttm+tty"), 0., response2dvar.GetNBins("ttm+tty") , "bin", "Events");
 		pdfunc->Add1dHist("pdfunc_ttm+dy", response2dvar.GetNBins("ttm+dy"), 0., response2dvar.GetNBins("ttm+dy") , "bin", "Events");
 		pdfunc->Add1dHist("pdfunc_jet+jetpt", response2dvar.GetNBins("jet+jetpt"), 0., response2dvar.GetNBins("jet+jetpt") , "bin", "Events");
+		pdfunc->Add1dHist("pdfunc_jet+jetptOF", response2dvar.GetNBins("jet+jetptOF"), 0., response2dvar.GetNBins("jet+jetptOF") , "bin", "Events");
 		pdfunc->Add1dHist("pdfunc_jet+jeteta", response2dvar.GetNBins("jet+jeteta"), 0., response2dvar.GetNBins("jet+jeteta") , "bin", "Events");
 		pdfunc->Add1dHist("pdfunc_jet+jetdr", response2dvar.GetNBins("jet+jetdr"), 0., response2dvar.GetNBins("jet+jetdr") , "bin", "Events");
 		pdfunc->Add1dHist("pdfunc_jet+jetdrtop", response2dvar.GetNBins("jet+jetdrtop"), 0., response2dvar.GetNBins("jet+jetdrtop") , "bin", "Events");
@@ -544,6 +565,7 @@ void ttbar::begin()
 		pdfunc->Add1dHist("pdfunc_reco_ttm+tty", response2dvar.GetNBins("ttm+tty"), 0., response2dvar.GetNBins("ttm+tty") , "bin", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_ttm+dy", response2dvar.GetNBins("ttm+dy"), 0., response2dvar.GetNBins("ttm+dy") , "bin", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_jet+jetpt", response2dvar.GetNBins("jet+jetpt"), 0., response2dvar.GetNBins("jet+jetpt") , "bin", "Events");
+		pdfunc->Add1dHist("pdfunc_reco_jet+jetptOF", response2dvar.GetNBins("jet+jetptOF"), 0., response2dvar.GetNBins("jet+jetptOF") , "bin", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_jet+jeteta", response2dvar.GetNBins("jet+jeteta"), 0., response2dvar.GetNBins("jet+jeteta") , "bin", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_jet+jetdr", response2dvar.GetNBins("jet+jetdr"), 0., response2dvar.GetNBins("jet+jetdr") , "bin", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_jet+jetdrtop", response2dvar.GetNBins("jet+jetdrtop"), 0., response2dvar.GetNBins("jet+jetdrtop") , "bin", "Events");
@@ -579,10 +601,12 @@ void ttbar::begin()
 		ss << "jet_" << j << "_";
 		truth1d.AddHist(ss.str()+"pt_fb_right", jetptbins[j], "p_{T}("+jetnames[j]+") [GeV]", "Events");
 		truth1d.AddHist(ss.str()+"eta_fb_right", jetetabins[j], "|#eta("+jetnames[j]+")|", "Events");
-		truth1d.AddHist(ss.str()+"dr_fb_right", jetdrbins[j], "#DeltaR_{t#bar{t}}("+jetnames[j]+")", "Events");
+		truth1d.AddHist(ss.str()+"dr_fb_right", jetdrbins[j], "#DeltaR_{j_{t}}("+jetnames[j]+")", "Events");
+		truth1d.AddHist(ss.str()+"drtop_fb_right", jetdrtopbins[j], "#DeltaR_{t}("+jetnames[j]+")", "Events");
 		truth1d.AddHist(ss.str()+"pt_fb_wrong", jetptbins[j], "p_{T}("+jetnames[j]+") [GeV]", "Events");
 		truth1d.AddHist(ss.str()+"eta_fb_wrong", jetetabins[j], "|#eta("+jetnames[j]+")|", "Events");
-		truth1d.AddHist(ss.str()+"dr_fb_wrong", jetdrbins[j], "#DeltaR_{t#bar{t}}("+jetnames[j]+")", "Events");
+		truth1d.AddHist(ss.str()+"dr_fb_wrong", jetdrbins[j], "#DeltaR_{j_{t}}("+jetnames[j]+")", "Events");
+		truth1d.AddHist(ss.str()+"drtop_fb_wrong", jetdrtopbins[j], "#DeltaR_{t}("+jetnames[j]+")", "Events");
 	}
 
 	double bkgcutmin = 0.0;
@@ -646,10 +670,10 @@ void ttbar::begin()
 	if(cpileup == 1) puhistname = "pu_plus";
 
 	TFile* f = TFile::Open("PUweight.root");
-	puhist = (TH1D*)f->Get(puhistname.c_str());
+	puhist = dynamic_cast<TH1D*>(f->Get(puhistname.c_str()));
 	TFile* fl = TFile::Open(cLeptonScaleFactor.c_str());
-	musfhist = (TH2D*)fl->Get("MuSF");
-	elsfhist = (TH2D*)fl->Get("ElSF");
+	musfhist = dynamic_cast<TH2D*>(fl->Get("MuSF"));
+	elsfhist = dynamic_cast<TH2D*>(fl->Get("ElSF"));
 
 	bdecayweights.Init(cbdecay);
 	bfragweights.Init("bfragweights.root", cbfrag);
@@ -671,6 +695,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
 	SEMILEPACC = false;
 	FULLLEP = false;
 	FULLHAD = false;
+
 	const vector<Ttgen>& ttgens = event.TTGens();
 	if(ttgens.size() != 8) { return; }
 	for(size_t n = 0 ; n < 8 ; ++n) { gps[n] = ttgens[n]; }
@@ -787,7 +812,7 @@ void ttbar::SelectPseudoTopLHC(URStreamer& event)
 			continue;
 		}
 
-		if(abs(pl.pdgId()) == 13 || abs(pl.pdgId()) == 11)
+		if((abs(pl.pdgId()) == 11 || abs(pl.pdgId()) == 13) && pl.isoR3() < 0.2)
 		{
 			if(Abs(pl.Eta()) < 2.4 && pl.Pt() > 15)
 			{
@@ -810,11 +835,6 @@ void ttbar::SelectPseudoTopLHC(URStreamer& event)
 		if(pl.Pt() < min({cpbjetptsoft, cpwjetptsoft}) || Abs(pl.Eta()) > cpjetetamax) continue;
 		if(lepton->DeltaR(pl) < 0.4) {continue;}
 		sgenparticles.push_back(pl);
-		if(pl.isoR3() > 0.90)
-		{
-			pstphotons.push_back(&(sgenparticles.back()));	
-			continue;
-		}
 		if(abs(pl.pdgId()) == 5)
 		{
 			pstbjets.push_back(&(sgenparticles.back()));	
@@ -839,10 +859,13 @@ void ttbar::SelectPseudoTopLHC(URStreamer& event)
 	double N = lepton->Pz()*lepton->Pz() - lepton->E()*lepton->E();
 	double p = -1.*A*lepton->Pz()/N;
 	double q = (A*A - lepton->E()*lepton->E()*nu.Pt()*nu.Pt())/N;
-	
-	if(p*p - q < 0.) {return;}
 
-	double pz = p + sqrt(p*p - q);
+	double pz = p;
+	if(p*p - q > 0.)
+	{
+		if(p > 0) {pz += sqrt(p*p - q);}
+		else {pz -= sqrt(p*p - q);}
+	}
 	nu.SetXYZM(nu.Px(), nu.Py(), pz, 0.);
 
 	int bh = 0;
@@ -865,12 +888,13 @@ void ttbar::SelectPseudoTopLHC(URStreamer& event)
 			genaddjets.push_back(gj);
 		}
 	}
-	psper.SetAdditionalJets(genaddjets, [](TLorentzVector* j){return true;});
+	psper.SetAdditionalJets(genaddjets, [](TLorentzVector* j){return j->Pt() > 30.;});
 }
 
 void ttbar::SelectPseudoTop(URStreamer& event)
 {
 	const vector<Pl>& pls = event.PLs();
+
 	GenObject* lepton = nullptr;
 	int lc = 0;
 	TLorentzVector nu;
@@ -901,8 +925,8 @@ void ttbar::SelectPseudoTop(URStreamer& event)
 		if(abs(pl.pdgId()) == 13 || abs(pl.pdgId()) == 11)
 		{
 			if(Abs(pl.Eta()) > 2.4 || pl.Pt() < 15) continue;
-			if(pl.isoR4()==0) {gen2d["pllepisoprompt"]->Fill(pl.Pt(), pl.isoR3(), weight);}
-			if(pl.isoR3() < 0.2)
+
+			if(pl.isoR3() < 0.35)
 			{
 				lc++;
 				if(Abs(pl.Eta()) < cpletamax && pl.Pt() > cplptmin)
@@ -1001,11 +1025,10 @@ void ttbar::AddGenJetSelection(URStreamer& event)
 		}
 		else if(gj.pdgId() == 22)
 		{
-			if(Abs(gj.Eta()) > 2.4 || gj.Pt() < 30) continue;
+			if(Abs(gj.Eta()) > 2.4 || gj.Pt() < 15) continue;
 			sgenparticles.push_back(gj);
 			plphotons.push_back(&(sgenparticles.back()));
 		}
-
 
 		if(abs(gj.pdgId()) > 5) {continue;}
 		sgenparticles.push_back(gj);
@@ -1082,14 +1105,19 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	for(GenObject* pllep : plleptons)
 	{
 		if(abs(pllep->pdgId()) != 13) continue;
-		gen2d["pllepiso"]->Fill(pllep->Pt(), pllep->isolation(), weight);
 		gen2d["plmuiso"]->Fill(pllep->Pt(), pllep->isolation(), weight);
+		if(pllep->fromhadron() == false) gen2d["plmuisoprompt"]->Fill(pllep->Pt(), pllep->isolation(), weight);
+		if(TTMC && ((abs(gps[2].pdgId()) == 13 && pllep->DeltaR(gps[2]) < 0.1) || (abs(gps[7].pdgId()) == 13 && pllep->DeltaR(gps[7]) < 0.1))) 
+		{
+			gen2d["plmuisott"]->Fill(pllep->Pt(), pllep->isolation(), weight);
+		}
 		for(IDMuon* mu : tightmuons)
 		{
 			if(mu->DeltaR(*pllep) < 0.3)
 			{
-				gen2d["pllepisoreco"]->Fill(pllep->Pt(), pllep->isolation(), weight);
 				gen2d["plmuisoreco"]->Fill(pllep->Pt(), pllep->isolation(), weight);
+				if(pllep->fromhadron() == false) gen2d["plmuisopromptreco"]->Fill(pllep->Pt(), pllep->isolation(), weight);
+				if(TTMC && ((abs(gps[2].pdgId()) == 13 && pllep->DeltaR(gps[2]) < 0.1) || (abs(gps[7].pdgId()) == 13 && pllep->DeltaR(gps[7]) < 0.1))) gen2d["plmuisottreco"]->Fill(pllep->Pt(), pllep->isolation(), weight);
 				break;
 			}
 		}
@@ -1124,14 +1152,16 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	for(GenObject* pllep : plleptons)
 	{
 		if(abs(pllep->pdgId()) != 11) continue;
-		gen2d["pllepiso"]->Fill(pllep->Pt(), pllep->isolation(), weight);
 		gen2d["pleliso"]->Fill(pllep->Pt(), pllep->isolation(), weight);
+		if(pllep->fromhadron() == false) gen2d["plelisoprompt"]->Fill(pllep->Pt(), pllep->isolation(), weight);
+		if(TTMC && ((abs(gps[2].pdgId()) == 11 && pllep->DeltaR(gps[2]) < 0.1) || (abs(gps[7].pdgId()) == 11 && pllep->DeltaR(gps[7]) < 0.1))) gen2d["plelisott"]->Fill(pllep->Pt(), pllep->isolation(), weight);
 		for(IDElectron* el : mediumelectrons)
 		{
 			if(el->DeltaR(*pllep) < 0.3)
 			{
-				gen2d["pllepisoreco"]->Fill(pllep->Pt(), pllep->isolation(), weight);
 				gen2d["plelisoreco"]->Fill(pllep->Pt(), pllep->isolation(), weight);
+				if(pllep->fromhadron() == false) gen2d["plelisopromptreco"]->Fill(pllep->Pt(), pllep->isolation(), weight);
+				if(TTMC && ((abs(gps[2].pdgId()) == 11 && pllep->DeltaR(gps[2]) < 0.1) || (abs(gps[7].pdgId()) == 11 && pllep->DeltaR(gps[7]) < 0.1))) gen2d["plelisottreco"]->Fill(pllep->Pt(), pllep->isolation(), weight);
 				break;
 			}
 		}
@@ -1142,17 +1172,16 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	for(vector<Jet>::const_iterator jetit = jets.begin(); jetit != jets.end(); ++jetit)
 	{
 		IDJet jet(*jetit);
-		if(Abs(jet.Eta()) > cjetetamax) {continue;}
 		if(!jet.ID() || !jet.Clean(loosemuons, looseelectrons)) {continue;}
-		double sfres = jetscaler.GetRes(jet, Min(event.rho().value(), 30.), cjetres);
-		double sfgen = sfres + jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajet);
+		double sfres = jetscaler.GetRes(jet, event.rho().value(), cjetres);
+		double sfgen = sfres * jetscaler.GetScale(jet, csigmajet);
 		double sfwj = 0.;
-		if(csigmajetwj != 1000.) {sfwj = sfres + jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajetwj);}
-		else{ sfwj = sfres + 1. + cscalejetwj;}
-		jet.SetSF(1, sfres+1, metcorr);
+		if(csigmajetwj != 1000.) {sfwj = sfres * jetscaler.GetScale(jet, csigmajetwj);}
+		else{ sfwj = sfres * (1. + cscalejetwj);}
+		jet.SetSF(1, sfres, metcorr);
 		jet.SetSF(2, sfgen, metcorr);
 		jet.SetSF(3, sfwj, metcorr);
-		if(jet.Pt() < jetptmin) {continue;}
+		if(jet.Pt() < jetptmin || Abs(jet.Eta()) > cjetetamax) {continue;}
 
 		sjets.push_back(jet);
 		cleanedjets.push_back(&(sjets.back()));
@@ -1175,6 +1204,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	for(GenObject* plph : plphotons)
 	{
 		gen2d["plphiso"]->Fill(plph->Pt(), plph->isolation(), weight);
+		if(!plph->fromhadron()){gen2d["plphisoprompt"]->Fill(plph->Pt(), plph->isolation(), weight);}
 		for(IDJet* j:cleanedjets)
 		{
 			if(j->DeltaR(*plph) < 0.3)
@@ -1311,28 +1341,12 @@ void ttbar::ttanalysis(URStreamer& event)
 	}
 
 	if(lep == nullptr){return;}
+	weight *= lepeffweight(lep, event);
 
 	if(cleanedjets.size() < 3){return;}
 
 	reco1d["counter"]->Fill(1.5, weight);
 
-	if(isDA == 0)
-	{
-		if(tightmuons.size() == 1)
-		{
-			weight *= musfhist->GetBinContent(musfhist->GetXaxis()->FindFixBin(lep->Eta()), musfhist->GetYaxis()->FindFixBin(Min(lep->Pt(), 170.)));
-		}
-		if(mediumelectrons.size() == 1)
-		{
-			weight *= elsfhist->GetBinContent(elsfhist->GetXaxis()->FindFixBin(dynamic_cast<IDElectron*>(lep)->SCeta()), elsfhist->GetYaxis()->FindFixBin(Min(lep->Pt(), 170.)));
-			int l1ptmax = event.trigger().El27ptmax();
-			if(l1ptmax != -1 && l1ptmax < 34)
-			{
-				weight*=cel27eff[(l1ptmax-24)/2];
-			}
-		}
-
-	}
 
 	sort(cleanedjets.begin(), cleanedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
 	int nbjets = count_if(cleanedjets.begin(), cleanedjets.end(), [&](IDJet* A){return(A->csvIncl() > B_MEDIUM);});
@@ -1470,7 +1484,8 @@ void ttbar::ttanalysis(URStreamer& event)
 		double pz = p;
 		if(p*p - q > 0.)
 		{
-			pz = p + sqrt(p*p - q);
+			if(p > 0 ){pz += sqrt(p*p - q);}
+			else{pz -= sqrt(p*p - q);}
 		}
 		TLorentzVector nu;
 		nu.SetXYZM(met.Px(), met.Py(), pz, 0.);
@@ -1484,27 +1499,6 @@ void ttbar::ttanalysis(URStreamer& event)
 	else
 	{
 		reconstruction();
-	//	for(int rep = 0 ; rep < 2 ; ++rep)
-	//	{
-	//		reconstruction();
-
-	//		if(rep == 0 && (csigmajet != 0 || csigmajetwj != 0))
-	//		{
-	//			TVector2 metcorr(0.,0.);
-	//			for(IDJet* j:cleanedjets)
-	//			{
-	//				j->ApplySF(2, metcorr);
-	//			}
-	//			if(bestper.IsComplete())
-	//			{
-	//				dynamic_cast<IDJet*>(bestper.WJa())->ApplySF(3, metcorr);
-	//				dynamic_cast<IDJet*>(bestper.WJb())->ApplySF(3, metcorr);
-	//			}
-	//			met.Update(metcorr);
-	//			continue;
-	//		}
-	//		break;
-	//	}
 		if(bestper.Prob() > 1E9){return;}
 	}
 	if(bestper.IsComplete() == false){return;}
@@ -1581,6 +1575,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	for(size_t n = 0 ; n < bestper.NJets() ; ++n)
 	{
 		response2dvar.FillAll("jet+jetpt", n, bestper.GetJet(n)->Pt(), weight);
+		response2dvar.FillAll("jet+jetptOF", n, bestper.GetJet(n)->Pt(), weight);
 		response2dvar.FillAll("jet+jeteta", n, abs(bestper.GetJet(n)->Eta()), weight);
 		response2dvar.FillAll("jet+jetdr", n, bestper.DRminTTjets(bestper.GetJet(n)), weight);
 		response2dvar.FillAll("jet+jetdrtop", n, bestper.DRminTop(bestper.GetJet(n)), weight);
@@ -1617,6 +1612,7 @@ void ttbar::ttanalysis(URStreamer& event)
 			for(size_t n = 0 ; n < genper->NJets() ; ++n)
 			{
 				pdfunc->Fill1d("pdfunc_reco_jet+jetpt", response2dvar.GetBin("jet+jetpt", n, genper->GetJet(n)->Pt())-0.5, weight);
+				pdfunc->Fill1d("pdfunc_reco_jet+jetptOF", response2dvar.GetBin("jet+jetptOF", n, genper->GetJet(n)->Pt())-0.5, weight);
 				pdfunc->Fill1d("pdfunc_reco_jet+jeteta", response2dvar.GetBin("jet+jeteta", n, abs(genper->GetJet(n)->Eta()))-0.5, weight);
 				pdfunc->Fill1d("pdfunc_reco_jet+jetdr", response2dvar.GetBin("jet+jetdr", n, genper->DRminTTjets(genper->GetJet(n)))-0.5, weight);
 				pdfunc->Fill1d("pdfunc_reco_jet+jetdrtop", response2dvar.GetBin("jet+jetdrtop", n, genper->DRminTop(genper->GetJet(n)))-0.5, weight);
@@ -1665,6 +1661,7 @@ void ttbar::ttanalysis(URStreamer& event)
 				const TLorentzVector* rjet = bestper.GetJet(jtrec);
 				const TLorentzVector* gjet = genper->GetJet(jttruth);
 				response2dvar.FillTruthReco("jet+jetpt", jttruth, gjet->Pt(), jtrec, rjet->Pt(), weight);
+				response2dvar.FillTruthReco("jet+jetptOF", jttruth, gjet->Pt(), jtrec, rjet->Pt(), weight);
 				response2dvar.FillTruthReco("jet+jeteta", jttruth, abs(gjet->Eta()), jtrec, abs(rjet->Eta()), weight);
 				response2dvar.FillTruthReco("jet+jetdr", jttruth, genper->DRminTTjets(gjet), jtrec, bestper.DRminTTjets(rjet), weight);
 				response2dvar.FillTruthReco("jet+jetdrtop", jttruth, genper->DRminTop(gjet), jtrec, bestper.DRminTop(rjet), weight);
@@ -1767,8 +1764,10 @@ void ttbar::ttanalysis(URStreamer& event)
 				truth1d[ss.str()+"pt_fb_right"]->Fill(jet->Pt(),weight);
 				truth1d[ss.str()+"eta_fb_right"]->Fill(Abs(jet->Eta()), weight);
 				truth1d[ss.str()+"dr_fb_right"]->Fill(bestper.DRminTTjets(jet), weight);
+				truth1d[ss.str()+"drtop_fb_right"]->Fill(bestper.DRminTop(jet), weight);
 				const TLorentzVector* gjet = genper->GetJet(j); 
 				response2dvar.FillRes("jet+jetpt", j, gjet->Pt(), j, jet->Pt(), weight);
+				response2dvar.FillRes("jet+jetptOF", j, gjet->Pt(), j, jet->Pt(), weight);
 				response2dvar.FillRes("jet+jeteta", j, abs(gjet->Eta()), j, abs(jet->Eta()), weight);
 				response2dvar.FillRes("jet+jetdr", j, genper->DRminTTjets(gjet), j, bestper.DRminTTjets(jet), weight);
 				response2dvar.FillRes("jet+jetdrtop", j, genper->DRminTop(gjet), j, bestper.DRminTop(jet), weight);
@@ -1778,6 +1777,7 @@ void ttbar::ttanalysis(URStreamer& event)
 				truth1d[ss.str()+"pt_fb_wrong"]->Fill(jet->Pt(), weight);
 				truth1d[ss.str()+"eta_fb_wrong"]->Fill(Abs(jet->Eta()), weight);
 				truth1d[ss.str()+"dr_fb_wrong"]->Fill(bestper.DRminTTjets(jet), weight);
+				truth1d[ss.str()+"drtop_fb_wrong"]->Fill(bestper.DRminTTjets(jet), weight);
 			}
 		}
 
@@ -1880,7 +1880,30 @@ void ttbar::reconstruction()
 	}
 }
 
-
+double ttbar::lepeffweight(TLorentzVector* lep, URStreamer& event)
+{
+	if(isDA != 0) return 1.;
+	double lepw = 1.;
+	double leperror = 0.02;
+	if(tightmuons.size() == 1)
+	{
+		int bx = musfhist->GetXaxis()->FindFixBin(lep->Eta());
+		int by = musfhist->GetYaxis()->FindFixBin(Min(lep->Pt(), 170.));
+		lepw = musfhist->GetBinContent(bx, by) + csigmalep * sqrt(pow(musfhist->GetBinError(bx, by),2) + pow(leperror, 2));
+	}
+	else if(mediumelectrons.size() == 1)
+	{
+		int bx = elsfhist->GetXaxis()->FindFixBin(dynamic_cast<IDElectron*>(lep)->SCeta());
+		int by = elsfhist->GetYaxis()->FindFixBin(Min(lep->Pt(), 170.));
+		lepw = elsfhist->GetBinContent(bx, by) + csigmalep * sqrt(pow(elsfhist->GetBinError(bx, by),2) + pow(leperror, 2));
+		int l1ptmax = event.trigger().El27ptmax();
+		if(l1ptmax != -1 && l1ptmax < 34)
+		{
+			lepw*=cel27eff[(l1ptmax-24)/2];
+		}
+	}
+	return lepw;
+}
 
 
 //This method is called once every file, contains the event loop
@@ -1934,10 +1957,14 @@ void ttbar::analyze()
 			if(TTMC)
 			{
 				const vector<Mcweight>& ws =  event.MCWeights();
-				if(cfacscale == -1) mcweight = ws[2].weights()/Abs(ws[0].weights());
-				else if(cfacscale == 1) mcweight = ws[1].weights()/Abs(ws[0].weights());
-				if(crenscale == -1) mcweight = ws[6].weights()/Abs(ws[0].weights());
-				else if(crenscale == 1) mcweight = ws[3].weights()/Abs(ws[0].weights());
+				if(cfacscale == -1 && crenscale == -1) mcweight = ws[8].weights()/Abs(ws[0].weights());
+				else if(cfacscale == 1 && crenscale == 1) mcweight = ws[4].weights()/Abs(ws[0].weights());
+				else if(cfacscale == -1 && crenscale == 1) mcweight = ws[5].weights()/Abs(ws[0].weights());
+				else if(cfacscale == 1 && crenscale == -1) mcweight = ws[7].weights()/Abs(ws[0].weights());
+				else if(cfacscale == -1 && crenscale == 0) mcweight = ws[2].weights()/Abs(ws[0].weights());
+				else if(cfacscale == 1 && crenscale == 0) mcweight = ws[1].weights()/Abs(ws[0].weights());
+				else if(cfacscale == 0 && crenscale == -1) mcweight = ws[6].weights()/Abs(ws[0].weights());
+				else if(cfacscale == 0 && crenscale == 1) mcweight = ws[3].weights()/Abs(ws[0].weights());
 				if(chdamp == -1) mcweight = ws[227].weights()/Abs(ws[0].weights());
 				else if(chdamp == 1) mcweight = ws[245].weights()/Abs(ws[0].weights());
 			}
@@ -2084,6 +2111,7 @@ void ttbar::analyze()
 			for(size_t n = 0 ; n < genper->NJets() ; ++n)
 			{
 				response2dvar.FillTruth("jet+jetpt", n, genper->GetJet(n)->Pt(), weight);
+				response2dvar.FillTruth("jet+jetptOF", n, genper->GetJet(n)->Pt(), weight);
 				response2dvar.FillTruth("jet+jeteta", n, abs(genper->GetJet(n)->Eta()), weight);
 				response2dvar.FillTruth("jet+jetdr", n, genper->DRminTTjets(genper->GetJet(n)), weight);
 				response2dvar.FillTruth("jet+jetdrtop", n, genper->DRminTop(genper->GetJet(n)), weight);
@@ -2118,6 +2146,7 @@ void ttbar::analyze()
 				for(size_t n = 0 ; n < genper->NJets() ; ++n)
 				{
 					pdfunc->Fill1d("pdfunc_jet+jetpt", response2dvar.GetBin("jet+jetpt", n, genper->GetJet(n)->Pt())-0.5, weight);
+					pdfunc->Fill1d("pdfunc_jet+jetptOF", response2dvar.GetBin("jet+jetptOF", n, genper->GetJet(n)->Pt())-0.5, weight);
 					pdfunc->Fill1d("pdfunc_jet+jeteta", response2dvar.GetBin("jet+jeteta", n, abs(genper->GetJet(n)->Eta()))-0.5, weight);
 					pdfunc->Fill1d("pdfunc_jet+jetdr", response2dvar.GetBin("jet+jetdr", n, genper->DRminTTjets(genper->GetJet(n)))-0.5, weight);
 					pdfunc->Fill1d("pdfunc_jet+jetdrtop", response2dvar.GetBin("jet+jetdrtop", n, genper->DRminTop(genper->GetJet(n)))-0.5, weight);
@@ -2129,11 +2158,9 @@ void ttbar::analyze()
 			ttp_genacc.Fill(*genper, weight);
 			truth1d["counter"]->Fill(2.5, weight);
 		}
-		//cout << event.filter().Flag_goodVertices() << " " <<  event.filter().Flag_CSCTightHaloFilter() << " " << event.filter().Flag_HBHENoiseFilter() << " " << event.filter().HBHEnew() << endl;
-		//event.filter().Flag_goodVertices() == 1 && event.filter().Flag_CSCTightHaloFilter() == 1 &&
-				  //event.filter().Flag_goodVertices() == 1 && event.filter().Flag_CSCTightHaloFilter() == 1 && event.filter().HBHEnew() == 1 &&
-				   //event.trigger().HLT_IsoMu24_eta2p1() == 1 || (event.trigger().HLT_IsoMu24_eta2p1() == -1 && event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf() == 1)
-				   //
+
+		SelectRecoParticles(event);
+
 		if(isDA && Abs(event.trigger().HLT_IsoMu24()) != 1) {cout << "TRIGGER UNDEFINED IsoMu24:" << event.trigger().HLT_IsoMu24() << endl; }
 		if(isDA && Abs(event.trigger().HLT_IsoTkMu24()) != 1) {cout << "TRIGGER UNDEFINED: TKMu24" << event.trigger().HLT_IsoTkMu24() << endl; }
 		if(isDA && Abs(event.trigger().HLT_Ele27_WPTight_Gsf()) != 1) {cout << "TRIGGER UNDEFINED EL:" <<  event.trigger().HLT_Ele27_WPTight_Gsf() << endl; }
@@ -2160,7 +2187,7 @@ void ttbar::analyze()
 		)
 		{
 			//cout << "sel " << event.run << " " << event.lumi << " " << event.evt << " " << -1 << " " << cleanedjets.size() << endl;
-			SelectRecoParticles(event);
+			//SelectRecoParticles(event);
 			ttanalysis(event);
 		}
 

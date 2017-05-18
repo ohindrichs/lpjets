@@ -161,27 +161,49 @@ void JetScaler::InitResolution(const string& resolutionfile, const string& sffil
 
 double JetScaler::GetRes(const IDJet& jet, double rho, double sigmares)
 {
-	if(AN->isDA != 0){ return 0.;}
-
+	double rescor = 1.;
+	if(AN->isDA != 0){ return rescor;}
+	if(rho > 44) {rho = 44;}
+	if(abs(jet.Eta()) >= 4.7) {return 1.;}
 	//cout << jet.Eta() << " " << rho << endl;
-	//cout << (resinfo.find(jet.Eta()) - resinfo.begin()) << endl;
 	const vector<double>& par = resinfo[jet.Eta()][rho];
 	double x = jet.Pt();
 	double resolution = sqrt(par[0]*abs(par[0])/(x*x)+par[1]*par[1]*pow(x,par[3])+par[2]*par[2]); 	
-	//cout << jet.Eta() << " " << rho << " - " << resolution << ": " << par[0] << " " << par[1]<< " " << par[2]<< " " << par[3] << endl;
+	//cout << jet.Eta() << " " << rho << " - " << resolution << ": " << par[0] << " " << par[1]<< " " << par[2] << endl;
+
 	const vector<double>& sfs = ressf[jet.Eta()];
 	double s = sfs[0];
 	//cout << sfs[0] << " " << sfs[1] << " " << sfs[2] << endl;
 	if(sigmares <= 0) {s = sfs[0] + sigmares*(sfs[0]-sfs[1]);}
 	if(sigmares > 0) {s = sfs[0] + sigmares*(sfs[2]-sfs[0]);}
-	return gRandom->Gaus(0., resolution*sqrt(s*s-1.));
+
+	GenObject* matchedmcjet = nullptr;
+	for(GenObject* genj : AN->genalljets)
+	{
+		if(genj->DeltaR(jet) < 0.2 && abs(jet.Pt()-genj->Pt()) < 3*resolution*jet.Pt())
+		{
+			matchedmcjet = genj;
+			break;
+		}
+	}	
+
+	if(matchedmcjet)
+	{
+		rescor +=  (s-1)*(jet.Pt()-matchedmcjet->Pt())/jet.Pt();
+	}
+	else
+	{
+		rescor += gRandom->Gaus(0., resolution*sqrt(s*s-1.));
+	}
+	return(max({0., rescor}));
 }
 
-double JetScaler::GetScale(const IDJet& jet, double rho, double sigmascale)
+double JetScaler::GetScale(const IDJet& jet, double sigmascale)
 {
-	if(AN->isDA != 0){ return 1.;}
-
 	double sf = 1.;
+	if(AN->isDA != 0){ return sf;}
+	if(abs(jet.Eta()) >= 5.4) {return 1.;}
+
 //	//cout << jet.Eta() << " " << rho << endl;
 //	//cout << (resinfo.find(jet.Eta()) - resinfo.begin()) << endl;
 //	const vector<double>& par = resinfo[jet.Eta()][rho];

@@ -8,13 +8,14 @@ private:
 	int pdgId_;
 	int status_;
 	double isolation_ = -1.;
+	bool fromhadron_ = false;
 
 public:
 	GenObject()=default;
 //	GenObject(const Genparticle& gp) : TLorentzVector(gp), pdgId_(gp.pdgId()), status_(gp.status())
 //	{
 //	}
-	GenObject(const Pl& gp) : TLorentzVector(gp), pdgId_(gp.pdgId()), status_(gp.status()), isolation_(gp.isoR3())
+	GenObject(const Pl& gp) : TLorentzVector(gp), pdgId_(gp.pdgId()), status_(gp.status()), isolation_(gp.isoR3()), fromhadron_(gp.isoR4())
 	{
 	}
 	GenObject(const Ttgen& gp) : TLorentzVector(gp), pdgId_(gp.pdgId()), status_(gp.status())
@@ -39,6 +40,7 @@ public:
 	int pdgId() const {return pdgId_;}
 	int status() const {return status_;}
 	double isolation() const {return isolation_;}
+	bool fromhadron() const {return fromhadron_;}
 
 };
 #endif

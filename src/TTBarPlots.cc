@@ -30,11 +30,10 @@ void TTBarPlots::Init(ttbar* analysis)
 	double tbmin = 10.;
 	double tbmax = 30.;
 	plot1d.AddHist("MET", 500, 0, 2000, "MET", "Events");
+	plot1d.AddHist("METphi", 600, -Pi(), Pi(), "MET", "Events");
 	plot1d.AddHist("HT", 600, 0, 6000, "HT", "Events");
 	plot1d.AddHist("EvtMass", 600, 0, 6000, "EvtMass", "Events");
 	plot1d.AddHist("njets", 15, 0, 15, "additional jets", "Events");
-	plot1d.AddHist("btag_blep", 100, 0, 1, "CSVv2", "Events");
-	plot1d.AddHist("btag_bhad", 100, 0, 1, "CSVv2", "Events");
 	for(int j = 0 ; j < 8 ; ++j)
 	{
 		stringstream ss;
@@ -79,6 +78,8 @@ void TTBarPlots::Init(ttbar* analysis)
 	plot2d.AddHist("massW_njet", 50, 0, 150, an->jetbins, "M(W) [GeV]", "");
 	plot2d.AddHist("massW_wjetmaxpt", 50, 0, 150, 100, 30, 530, "M(W) [GeV]", "");
 	plot2d.AddHist("massW_wjetavgpt", 50, 0, 150, 100, 30, 530, "M(W) [GeV]", "");
+	plot2d.AddHist("massW_wpt", 50, 0, 150, 100, 30, 530, "M(W) [GeV]", "");
+	plot2d.AddHist("massW_weta", 50, 0, 150, 50, -2.5, 2.5, "M(W) [GeV]", "");
 	for(int jn : jetbins)
 	{
 		stringstream jb;
@@ -122,6 +123,7 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 	//double testb = (*per.BLep() + *per.L()).Mt(); 
 	if(test == numeric_limits<double>::max()) {test = 0; testb = 0;}
 	plot1d["MET"]->Fill(an->met.Pt(), weight);
+	plot1d["METphi"]->Fill(an->met.Phi(), weight);
 	plot1d["HT"]->Fill(per.Ht(), weight);
 	plot1d["EvtMass"]->Fill(per.EvtMass(), weight);
 	plot1d["mttest"]->Fill(per.MTDiscr(), weight);
@@ -190,6 +192,8 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 	plot2d["massW_njet"]->Fill(per.WHad().M(), addjets.size(), weight);
 	plot2d["massW_wjetmaxpt"]->Fill(per.WHad().M(), per.WJPtmax()->Pt(), weight);
 	plot2d["massW_wjetavgpt"]->Fill(per.WHad().M(), 0.5*(per.WJPtmax()->Pt()+per.WJPtmin()->Pt()), weight);
+	plot2d["massW_wpt"]->Fill(per.WHad().M(), per.WHad().Pt(), weight);
+	plot2d["massW_weta"]->Fill(per.WHad().M(), per.WHad().Eta(), weight);
 	for(int jn : jetbins)
 	{
 		stringstream jb;

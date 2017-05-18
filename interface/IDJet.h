@@ -48,8 +48,8 @@ class IDJet : public Jet, public MCMatchable
 	bool ID()
 	{
 		if(numberOfDaughters() <= 1) {return false;}
-		if(neutralHadronEnergyFraction() >= 0.99){return false;}
-		if(neutralEmEnergyFraction() >= 0.99){return false;}
+		if(neutralHadronEnergyFraction() >= 0.90){return false;}
+		if(neutralEmEnergyFraction() >= 0.90){return false;}
 		if(TMath::Abs(Eta()) < 2.4)
 		{
 			if(chargedEmEnergyFraction() >= 0.99){return false;}

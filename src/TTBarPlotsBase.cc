@@ -32,10 +32,13 @@ void TTBarPlotsBase::Init(ttbar* analysis)
     plot1d.AddHist("lep_eta", 480, -2.4, 2.4, "#eta(l)", "Events");
     plot1d.AddHist("mu_pt", 500, 0., 500., "p_{T}(#mu) [GeV]", "Events");
     plot1d.AddHist("mu_eta", 480, -2.4, 2.4, "#eta(#mu)", "Events");
+    plot1d.AddHist("mu_phi", 100, -Pi(), Pi(), "#phi(#mu)", "Events");
     plot1d.AddHist("el_pt", 500, 0., 500., "p_{T}(e) [GeV]", "Events");
     plot1d.AddHist("el_eta", 480, -2.4, 2.4, "#eta(e)", "Events");
+    plot1d.AddHist("el_phi", 100, -Pi(), Pi(), "#phi(e)", "Events");
     plot1d.AddHist("nu_pt", 500, 0., 500., "p_{T}(#nu) [GeV]", "Events");
     plot1d.AddHist("nu_eta", 200, -5, 5., "#eta(#nu)", "Events");
+    plot1d.AddHist("nu_phi", 100, -Pi(), Pi(), "#phi(#nu)", "Events");
     plot1d.AddHist("lepp_eta", 200, -5, 5., "#eta(l+)", "Events");
     plot1d.AddHist("lepm_eta", 200, -5, 5., "#eta(l-)", "Events");
     plot1d.AddHist("thad_pt", 500, 0, 1000, "p_{T}(t_{h}) [GeV]", "Events");
@@ -55,8 +58,10 @@ void TTBarPlotsBase::Init(ttbar* analysis)
     plot1d.AddHist("wj_dr", 100, 0., 5., "#Delta#R(j_{whad})", "Events");
     plot1d.AddHist("bjet_pt", 100, 0., 500., "p_{T}(b) [GeV]", "Events");
     plot1d.AddHist("bjet_eta", 100, -2.5, 2.5, "#eta(b)", "Events");
+    plot1d.AddHist("bjet_phi", 100, -Pi(), Pi(), "#phi(b)", "Events");
     plot1d.AddHist("wjet_pt", 100, 0., 500., "p_{T}(wj) [GeV]", "Events");
     plot1d.AddHist("wjet_eta", 100, -2.5, 2.5, "#eta(wj)", "Events");
+    plot1d.AddHist("wjet_phi", 100, -Pi(), Pi(), "#phi(wj)", "Events");
 	plot1d.AddHist("costhetastar", 20, -1., 1., "cos(#theta*)", "Events");
 	plot1d.AddHist("dbeta", 200, 0, 2., "#Delta#beta", "Events");
 	plot1d.AddHist("dymp", 200, -4., 4., "y(t)-y(#bar{t})", "Events");
@@ -66,7 +71,6 @@ void TTBarPlotsBase::Init(ttbar* analysis)
 //void TTBarPlotsBase::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* Hwb, TLorentzVector* Lb, TLorentzVector* Ll, TLorentzVector* Ln, int lepcharge, double weight)
 void TTBarPlotsBase::Fill(Permutation& per, double weight)
 {
-
 	plot2d["thad_pt_wjwj_dr"]->Fill(per.THad().Pt(), per.WJa()->DeltaR(*per.WJb()), weight);
 	plot2d["thad_pt_wjbj_dr"]->Fill(per.THad().Pt(), Min(per.BHad()->DeltaR(*per.WJa()), per.BHad()->DeltaR(*per.WJb())), weight);
     plot2d["Whad_M_thad_M"]->Fill(per.WHad().M(), per.THad().M(), weight);
@@ -84,14 +88,17 @@ void TTBarPlotsBase::Fill(Permutation& per, double weight)
 	{
 		plot1d["mu_pt"]->Fill(per.L()->Pt(), weight);
 		plot1d["mu_eta"]->Fill(per.L()->Eta(), weight);
+		plot1d["mu_phi"]->Fill(per.L()->Phi(), weight);
 	}
 	if(abs(per.LPDGId()) == 11)
 	{
 		plot1d["el_pt"]->Fill(per.L()->Pt(), weight);
 		plot1d["el_eta"]->Fill(per.L()->Eta(), weight);
+		plot1d["el_phi"]->Fill(per.L()->Phi(), weight);
 	}
 	plot1d["nu_pt"]->Fill(per.Nu().Pt(), weight);
 	plot1d["nu_eta"]->Fill(per.Nu().Eta(), weight);
+	plot1d["nu_phi"]->Fill(per.Nu().Phi(), weight);
 	plot1d["thad_pt"]->Fill(per.THad().Pt(), weight);
 	plot1d["tlep_pt"]->Fill(per.TLep().Pt(), weight);
 	plot1d["thad_eta"]->Fill(per.THad().Eta(), weight);
@@ -112,10 +119,14 @@ void TTBarPlotsBase::Fill(Permutation& per, double weight)
 	plot1d["bjet_pt"]->Fill(per.BLep()->Pt(), weight);
 	plot1d["bjet_eta"]->Fill(per.BHad()->Eta(), weight);
 	plot1d["bjet_eta"]->Fill(per.BLep()->Eta(), weight);
+	plot1d["bjet_phi"]->Fill(per.BHad()->Phi(), weight);
+	plot1d["bjet_phi"]->Fill(per.BLep()->Phi(), weight);
 	plot1d["wjet_pt"]->Fill(per.WJa()->Pt(), weight);
 	plot1d["wjet_pt"]->Fill(per.WJb()->Pt(), weight);
 	plot1d["wjet_eta"]->Fill(per.WJa()->Eta(), weight);
 	plot1d["wjet_eta"]->Fill(per.WJb()->Eta(), weight);
+	plot1d["wjet_phi"]->Fill(per.WJa()->Phi(), weight);
+	plot1d["wjet_phi"]->Fill(per.WJb()->Phi(), weight);
 	plot1d["dbeta"]->Fill((per.THad().BoostVector() - per.TLep().BoostVector()).Mag(), weight);
 	plot1d["dymp"]->Fill(per.T().Rapidity()-per.Tb().Rapidity(), weight);
 	plot1d["dy"]->Fill(Abs(per.T().Rapidity())-Abs(per.Tb().Rapidity()), weight);

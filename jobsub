@@ -2,6 +2,20 @@
 import sys, os, time, subprocess
 from pdb import set_trace
 
+
+configs = {}
+inf = open('ttbarxsec.cfg')
+data = inf.read()
+data = data.split('\n')
+for l in data:
+	l = l.split('#')[0]
+	if '=' in l:
+		name = l.split('=')[0].strip()
+		val = l.split('=')[1].strip()
+		configs[name] = val
+
+print configs
+
 swdir = os.path.realpath(os.environ['URA_PROJECT'])
 jobid = os.environ['jobid']
 inputdir = os.path.join(swdir, 'inputs')
@@ -51,9 +65,12 @@ for sf in samplefiles:
 	elif 'DATA' in sf:
 		filesperjob = 80
 	elif 'Hpp' in sf:
-		filesperjob = 10
+		filesperjob = 15
 	elif 'tt_' in sf:
-		filesperjob = 30
+		if configs['PDFTEST'] == '1' and 'tt_PowhegP8' in sf:
+			filesperjob = 8
+		else:
+			filesperjob = 15
 	else:
 		filesperjob = 20
 
