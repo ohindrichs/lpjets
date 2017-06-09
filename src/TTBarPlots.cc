@@ -38,7 +38,7 @@ void TTBarPlots::Init(ttbar* analysis)
 	{
 		stringstream ss;
 		ss << "jet_" << j << "_";
-		plot1d.AddHist(ss.str()+"pt", 200, 30, 430, "p_{T}("+an->jetnames[j]+") [GeV]", "Events");
+		plot1d.AddHist(ss.str()+"pt", 300, 30, 630, "p_{T}("+an->jetnames[j]+") [GeV]", "Events");
 		plot1d.AddHist(ss.str()+"pt_fb", an->jetptbins[j], "p_{T}("+an->jetnames[j]+") [GeV]", "Events");
 		plot1d.AddHist(ss.str()+"eta", 120, -2.4, 2.4, "#eta("+an->jetnames[j]+")", "Events");
 		plot1d.AddHist(ss.str()+"eta_fb", an->jetetabins[j], "|#eta("+an->jetnames[j]+")|", "Events");

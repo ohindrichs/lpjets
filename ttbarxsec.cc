@@ -665,15 +665,15 @@ void ttbar::begin()
 		//ttsolver.Init(probfilename, false, true);
 	}
 	btagweight.Init(this, cBTaggingSF, cBTaggingEff, cbtagunc, cltagunc);
+
 	string puhistname("pu_central");
 	if(cpileup == -1) puhistname = "pu_minus";
 	if(cpileup == 1) puhistname = "pu_plus";
-
 	TFile* f = TFile::Open("PUweight.root");
 	puhist = dynamic_cast<TH1D*>(f->Get(puhistname.c_str()));
-	TFile* fl = TFile::Open(cLeptonScaleFactor.c_str());
-	musfhist = dynamic_cast<TH2D*>(fl->Get("MuSF"));
-	elsfhist = dynamic_cast<TH2D*>(fl->Get("ElSF"));
+
+	mucorrector.init("SF_Mu.root", 0.01);
+	elcorrector.init("SF_El.root", 0.01);
 
 	bdecayweights.Init(cbdecay);
 	bfragweights.Init("bfragweights.root", cbfrag);
@@ -914,7 +914,7 @@ void ttbar::SelectPseudoTop(URStreamer& event)
 		if(pl.pdgId() == 22)
 		{
 			if(Abs(pl.Eta()) > 2.4 || pl.Pt() < 15.) continue;
-			if(pl.isoR3() < 0.2)
+			if(pl.isoR3() < 0.25)
 			{
 				sgenparticles.push_back(pl);
 				pstphotons.push_back(&(sgenparticles.back()));
@@ -1515,7 +1515,7 @@ void ttbar::ttanalysis(URStreamer& event)
 		
 	}
 	//if(!BTAGMODE && bestper.MassDiscr() > clikelihoodcut){return;}
-	//if(!BTAGMODE && bestper.Prob() > clikelihoodcut){return;}
+	if(!LHCPS && !BTAGMODE && bestper.Prob() > clikelihoodcut){return;}
 	if(STUDENT)
 	{
 		num_det = 2;
@@ -1884,18 +1884,13 @@ double ttbar::lepeffweight(TLorentzVector* lep, URStreamer& event)
 {
 	if(isDA != 0) return 1.;
 	double lepw = 1.;
-	double leperror = 0.02;
 	if(tightmuons.size() == 1)
 	{
-		int bx = musfhist->GetXaxis()->FindFixBin(lep->Eta());
-		int by = musfhist->GetYaxis()->FindFixBin(Min(lep->Pt(), 170.));
-		lepw = musfhist->GetBinContent(bx, by) + csigmalep * sqrt(pow(musfhist->GetBinError(bx, by),2) + pow(leperror, 2));
+		lepw = mucorrector.correctionmu(dynamic_cast<IDMuon*>(lep), csigmalep);
 	}
 	else if(mediumelectrons.size() == 1)
 	{
-		int bx = elsfhist->GetXaxis()->FindFixBin(dynamic_cast<IDElectron*>(lep)->SCeta());
-		int by = elsfhist->GetYaxis()->FindFixBin(Min(lep->Pt(), 170.));
-		lepw = elsfhist->GetBinContent(bx, by) + csigmalep * sqrt(pow(elsfhist->GetBinError(bx, by),2) + pow(leperror, 2));
+		lepw = elcorrector.correctionel(dynamic_cast<IDElectron*>(lep), csigmalep);
 		int l1ptmax = event.trigger().El27ptmax();
 		if(l1ptmax != -1 && l1ptmax < 34)
 		{

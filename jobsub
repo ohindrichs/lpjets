@@ -70,7 +70,7 @@ for sf in samplefiles:
 		if configs['PDFTEST'] == '1' and 'tt_PowhegP8' in sf:
 			filesperjob = 8
 		else:
-			filesperjob = 15
+			filesperjob = 20
 	else:
 		filesperjob = 20
 

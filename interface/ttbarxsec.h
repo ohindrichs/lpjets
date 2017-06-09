@@ -22,6 +22,7 @@
 #include "JetScaler.h"
 #include "BTagWeight.h"
 #include "BHadronDecayWeights.h"
+#include "LepEffCorrection.h"
 
 #include <TGraphErrors.h>
 
@@ -233,10 +234,8 @@ class ttbar : public AnalyzerBase
 		vector<string> jetnames = {"b_{l}", "b_{h}", "j_{W1}" , "j_{W2}", "j_{1}", "j_{2}","j_{3}", "j_{4}"};
 
 		TH1D* puhist;
-		TH2D* musfhist;
-		TH2D* elsfhist;
-		TH2D* mutrgsfhist;
-		TH2D* eltrgsfhist;
+		LepEffCorrection mucorrector;
+		LepEffCorrection elcorrector;
 
 		bool STUDENT = false;
 		TFile* stud_tf = nullptr;
