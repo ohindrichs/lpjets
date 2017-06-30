@@ -65,14 +65,14 @@ for sf in samplefiles:
 	elif 'DATA' in sf:
 		filesperjob = 80
 	elif 'Hpp' in sf:
-		filesperjob = 15
+		filesperjob = 20
 	elif 'tt_' in sf:
 		if configs['PDFTEST'] == '1' and 'tt_PowhegP8' in sf:
-			filesperjob = 8
+			filesperjob = 10
 		else:
-			filesperjob = 20
+			filesperjob = 60
 	else:
-		filesperjob = 20
+		filesperjob = 60
 
 	#infile = os.path.join(inputdir, sf)
 	jobpath = os.path.join(jobdir, sf.split('.txt')[0])

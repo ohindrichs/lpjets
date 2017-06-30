@@ -92,14 +92,14 @@ setnames = {}
 #setnames['TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8'] = 'tt_isrup_PowhegP8.txt'
 #setnames['TT_TuneCUETP8M2T4_13TeV-powheg-fsrdown-pythia8'] = 'tt_fsrdown_PowhegP8.txt'
 #setnames['TT_TuneCUETP8M2T4_13TeV-powheg-fsrup-pythia8'] = 'tt_fsrup_PowhegP8.txt'
-#setnames['TT_TuneCUETP8M2T4_mtop1695_13TeV-powheg-pythia8'] = 'tt_mtop1695_PowhegP8.txt'
-#setnames['TT_TuneCUETP8M2T4_mtop1755_13TeV-powheg-pythia8'] = 'tt_mtop1755_PowhegP8.txt'
+setnames['TT_TuneCUETP8M2T4_mtop1695_13TeV-powheg-pythia8'] = 'tt_mtop1695_PowhegP8.txt'
+setnames['TT_TuneCUETP8M2T4_mtop1755_13TeV-powheg-pythia8'] = 'tt_mtop1755_PowhegP8.txt'
 #setnames['TT_TuneCUETP8M2T4_mtop1715_13TeV-powheg-pythia8'] = 'tt_mtop1715_PowhegP8.txt'
 #setnames['TT_TuneCUETP8M2T4_mtop1735_13TeV-powheg-pythia8'] = 'tt_mtop1735_PowhegP8.txt'
-#setnames['TT_TuneEE5C_13TeV-powheg-herwigpp'] = 'tt_PowhegHpp.txt'
+setnames['TT_TuneEE5C_13TeV-powheg-herwigpp'] = 'tt_PowhegHpp.txt'
 #setnames['TT_TuneEE5C_13TeV-amcatnlo-herwigpp'] = 'tt_MCatNLOHpp.txt'
 #setnames['TT_TuneCUETP8M1_13TeV-amcatnlo-pythia8'] = 'tt_MCatNLO.txt'
-#setnames['TTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8'] = 'tt_aMCatNLO.txt'
+setnames['TTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8'] = 'tt_aMCatNLO.txt'
 #setnames['TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'] = 'tt_Madgraph.txt'
 #setnames['SingleMuon'] = 'DATAMU.txt'
 #setnames['SingleElectron'] = 'DATAEL.txt'
@@ -107,7 +107,7 @@ setnames = {}
 #setnames['TT_TuneCUETP8M2T4up_13TeV-powheg-pythia8'] = 'tt_tuneup_PowhegP8.txt'
 #setnames['TT_hdampUP_TuneCUETP8M2T4_13TeV-powheg-pythia8'] = 'tt_hdup_PowhegP8.txt'
 #setnames['TT_hdampDOWN_TuneCUETP8M2T4_13TeV-powheg-pythia8'] = 'tt_hddown_PowhegP8.txt'
-setnames['TT_TuneCUETP8M2T4_erdON_13TeV-powheg-pythia8'] = 'tt_erdon_PowhegP8.txt'
+#setnames['TT_TuneCUETP8M2T4_erdON_13TeV-powheg-pythia8'] = 'tt_erdon_PowhegP8.txt'
 		
 
 dirname = sys.argv[1]
