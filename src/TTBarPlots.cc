@@ -133,7 +133,8 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 	plot1d["massmttest"]->Fill(per.MTDiscr()+test, weight);
 	plot1d["massnutest"]->Fill(per.Prob(), weight);
 
-	const vector<TLorentzVector*> addjets = per.AddJets();
+
+	const vector<TLorentzVector*>& addjets = per.AddJets();
 	plot1d["njets"]->Fill(addjets.size(), weight);
 
 	double dphi = -1;

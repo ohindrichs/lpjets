@@ -42,6 +42,8 @@ class Permutation
 		TLorentzVector tlep_;
 		TLorentzVector tt_;
 		TLorentzVector t_cms_;
+		double cts_;
+		TLorentzVector tb_cms_;
 		bool kinfit_ = false;
 		vector<TLorentzVector> improvedobjects;
 		vector<TLorentzVector*> addjets;
@@ -117,7 +119,13 @@ class Permutation
 				tlep_ = wlep_ + *BLep();
 				tt_ = thad_ + tlep_;
 				t_cms_ = T();
+				tb_cms_ = Tb();
 				t_cms_.Boost(-1.*TT().BoostVector());
+				tb_cms_.Boost(-1.*TT().BoostVector());
+				cts_ = TT().Vect().Dot(t_cms_.Vect())/TT().P()/t_cms_.P(); 
+				//t_cms_.Boost(0., 0, -1.*TT().Pz());
+				//tb_cms_.Boost(0., 0, -1.*TT().Pz());
+				//cout << TT().M() << " " << (t_cms_+tb_cms_).P() << " CMS " << t_cms_.CosTheta() << " " << TT().Vect().Dot(t_cms_.Vect())/TT().P()/t_cms_.P() << " " << tb_cms_.Theta() << endl;
 			}
 		}
 
@@ -132,6 +140,8 @@ class Permutation
 		TLorentzVector& THard() {return (THad().Pt() > TLep().Pt() ? THad() : TLep());}
 		TLorentzVector& TSoft() {return (THad().Pt() < TLep().Pt() ? THad() : TLep());}
 		TLorentzVector& T_CMS() {Calculate(); return t_cms_;}
+		double CTS() {Calculate(); return cts_;}
+		TLorentzVector& Tb_CMS() {Calculate(); return tb_cms_;}
 
 		double MtWLep();
 		double MttLep();

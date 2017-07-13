@@ -228,6 +228,7 @@ ttbar::ttbar(const std::string output_filename):
 	vector<string> testpdf;
 	if(PDFTEST) {pdfunc = new PDFuncertainty("NNPDF30_nlo_as_0118", 0, testpdf);}
 
+	ctsweights.init("cts_gen.root");
 
 }
 
@@ -241,6 +242,7 @@ void ttbar::begin()
 	gen1d.AddHist("ty", 500, 0, 10, "y(t)", "Events");
 	gen1d.AddHist("ttpt", 500, 0, 1000, "p_{T}(t#bar{t}) [GeV]", "Events");
 	gen1d.AddHist("tty", 500, 0, 10, "y(t#bar{t})", "Events");
+	gen1d.AddHist("cts", 40, -1, 1, "cts", "Events");
 	gen2d.AddHist("plmuiso", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
 	gen2d.AddHist("plmuisoprompt", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
 	gen2d.AddHist("plmuisott", 100, 0, 500, 200, 0, 2, "lepiso", "Events");
@@ -640,7 +642,23 @@ void ttbar::begin()
 	reco1d.AddHist("pupt_loose", 400, -2, 2, "pu fraction", "Events");
 	reco1d.AddHist("allpt_tight", 400, -2, 2, "pu fraction", "Events");
 	reco1d.AddHist("allpt_loose", 400, -2, 2, "pu fraction", "Events");
-	//reco1d.AddHist("Mt_W", 200, 0, 200, "M_{t}(W) [GeV]", "Events");
+	reco2d.AddHist("phpt_nn", 100, 20, 1000, 300, -2, 1, "p_{T}(#gamma) [GeV]", "");
+	reco2d.AddHist("phpt_iso", 100, 20, 1000, 200, 0, 0.2, "#eta(#gamma) [GeV]", "");
+	reco2d.AddHist("pheta_nn", 240, -2.4, 2.4, 300, -2, 1, "p_{T}(#gamma) [GeV]", "");
+	reco2d.AddHist("pheta_iso", 240, -2.4, 2.4, 200, 0., 0.2, "#eta(#gamma) [GeV]", "");
+	reco2d.AddHist("bkgphpt_nn", 100, 20, 1000, 300, -2, 1, "p_{T}(#gamma) [GeV]", "");
+	reco2d.AddHist("bkgphpt_iso", 100, 20, 1000, 200, 0, 0.2, "#eta(#gamma) [GeV]", "");
+	reco2d.AddHist("bkgpheta_nn", 240, -2.4, 2.4, 300, -2, 1, "p_{T}(#gamma) [GeV]", "");
+	reco2d.AddHist("bkgpheta_iso", 240, -2.4, 2.4, 200, 0., 0.2, "#eta(#gamma) [GeV]", "");
+	reco2d.AddHist("bkglepphpt_nn", 100, 20, 1000, 300, -2, 1, "p_{T}(#gamma) [GeV]", "");
+	reco2d.AddHist("bkglepphpt_iso", 100, 20, 1000, 200, 0, 0.2, "#eta(#gamma) [GeV]", "");
+	reco2d.AddHist("bkgleppheta_nn", 240, -2.4, 2.4, 300, -2, 1, "p_{T}(#gamma) [GeV]", "");
+	reco2d.AddHist("bkgleppheta_iso", 240, -2.4, 2.4, 200, 0., 0.2, "#eta(#gamma) [GeV]", "");
+	reco2d.AddHist("sigphpt_nn", 100, 20, 1000, 300, -2, 1, "p_{T}(#gamma) [GeV]", "");
+	reco2d.AddHist("sigphpt_iso", 100, 20, 1000, 200, 0, 0.2, "#eta(#gamma) [GeV]", "");
+	reco2d.AddHist("sigpheta_nn", 240, -2.4, 2.4, 300, -2, 1, "p_{T}(#gamma) [GeV]", "");
+	reco2d.AddHist("sigpheta_iso", 240, -2.4, 2.4, 200, 0., 0.2, "#eta(#gamma) [GeV]", "");
+	reco1d.AddHist("genph_type", 10, 0, 10, "type", "");
 	ttp_all.Init(this);
 
 	jetscaler.Init(cJetEnergyUncertainty, cjecuncertainty);
@@ -678,6 +696,7 @@ void ttbar::begin()
 	bdecayweights.Init(cbdecay);
 	bfragweights.Init("bfragweights.root", cbfrag);
 
+
 }
 
 ttbar::~ttbar()
@@ -706,6 +725,15 @@ void ttbar::SelectGenParticles(URStreamer& event)
 	weight *= 1.+cttptweight*((gentq + gentqbar).Pt()-200.)/2000.;
 	weight *= 1.+ctopptweight*(gentq.Pt()-200.)/1000.;
 	weight *= 1.+ctoprapweight*(0.2-0.2*Abs(gentq.Rapidity()));
+
+	TLorentzVector tt(gentq + gentqbar);
+	TLorentzVector tcms = gentq;
+	tcms.Boost(-1.*tt.BoostVector());
+	double cts = tt.Vect().Dot(tcms.Vect())/tt.P()/tcms.P();
+	gen1d["cts"]->Fill(cts, weight);
+	ctsweights.cal(cts);
+	
+
 	bool tlep = false;
 	bool tbarlep = false;
 	bool tem = false;
@@ -914,7 +942,7 @@ void ttbar::SelectPseudoTop(URStreamer& event)
 		if(pl.pdgId() == 22)
 		{
 			if(Abs(pl.Eta()) > 2.4 || pl.Pt() < 15.) continue;
-			if(pl.isoR3() < 0.25)
+			if(pl.isoR3() < 0.25 && !pl.isoR4())
 			{
 				sgenparticles.push_back(pl);
 				pstphotons.push_back(&(sgenparticles.back()));
@@ -1025,7 +1053,13 @@ void ttbar::AddGenJetSelection(URStreamer& event)
 		}
 		else if(gj.pdgId() == 22)
 		{
-			if(Abs(gj.Eta()) > 2.4 || gj.Pt() < 15) continue;
+			GenObject ph(gj);
+			reco1d["genph_type"]->Fill(0.5);
+            if(!ph.fromhadron()) {reco1d["genph_type"]->Fill(1.5);}
+            if(ph.isolation() < 0.25) {reco1d["genph_type"]->Fill(2.5);}
+            if(!ph.fromhadron() && ph.isolation() < 0.25) {reco1d["genph_type"]->Fill(3.5);}			
+
+			if(Abs(gj.Eta()) > 2.4 || gj.Pt() < 20) continue;
 			sgenparticles.push_back(gj);
 			plphotons.push_back(&(sgenparticles.back()));
 		}
@@ -1166,6 +1200,31 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 			}
 		}
 	}
+
+////Photons
+//	const vector<Photon>& photons = event.photons();
+//	for(IDPhoton ph : photons)
+//	{
+//
+//		if(!ph.ID(IDPhoton::MEDIUM_16) || ph.Pt() < 20.) continue;
+//		if(find_if(looseelectrons.begin(), looseelectrons.end(), [&](IDElectron* el){
+//
+////cout  << el->Pt() << " " << el->DeltaR(ph) << endl;
+//return el->DeltaR(ph) < 0.2;}) != looseelectrons.end()) continue;
+//		if(find_if(loosemuons.begin(), loosemuons.end(), [&](IDMuon* mu){
+//
+////cout  << mu->Pt() << " " << mu->DeltaR(ph) << endl;
+//return mu->DeltaR(ph) < 0.2;}) != loosemuons.end()) continue;
+//
+////		if(find_if(plleptons.begin(), plleptons.end(), [&](GenObject* el){
+////cout << el->pdgId() << " " << el->Pt() << " " << el->DeltaR(ph) << endl;
+////return el->DeltaR(ph) < 0.2;}) != plleptons.end()) continue;
+//
+//		sphotons.push_back(ph);
+//		mediumphotons.push_back(&(sphotons.back()));
+//	}
+//
+//Jets
 
 	TVector2 metcorr(0.,0.);
 	const vector<Jet>& jets = event.jets();
@@ -1504,6 +1563,38 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(bestper.IsComplete() == false){return;}
 	bestper.SetAdditionalJets(cleanedjets, [&](IDJet* jet){return jet->Pt() >= jetptmin;});
 
+//	for(const IDPhoton* ph : mediumphotons)
+//	{
+//		reco2d["phpt_nn"]->Fill(ph->Pt(), ph->showermva(), weight);
+//		reco2d["phpt_iso"]->Fill(ph->Pt(), ph->CorPFIsolation(), weight);
+//		reco2d["pheta_nn"]->Fill(ph->Eta(), ph->showermva(), weight);
+//		reco2d["pheta_iso"]->Fill(ph->Eta(), ph->CorPFIsolation(), weight);
+//		if(find_if(plphotons.begin(), plphotons.end(), [&](GenObject* gph){return !gph->fromhadron() && gph->DeltaR(*ph) < 0.2;}) != plphotons.end())
+//		//if(find_if(plphotons.begin(), plphotons.end(), [&](GenObject* gph){return gph->isolation() < 0.1 && gph->DeltaR(*ph) < 0.2;}) == plphotons.end())
+//		{
+//			reco2d["sigphpt_nn"]->Fill(ph->Pt(), ph->showermva(), weight);
+//			reco2d["sigphpt_iso"]->Fill(ph->Pt(), ph->CorPFIsolation(), weight);
+//			reco2d["sigpheta_nn"]->Fill(ph->Eta(), ph->showermva(), weight);
+//			reco2d["sigpheta_iso"]->Fill(ph->Eta(), ph->CorPFIsolation(), weight);
+//		}
+//		else if(find_if(plleptons.begin(), plleptons.end(), [&](GenObject* gph){return !gph->fromhadron() && gph->DeltaR(*ph) < 0.2;}) != plleptons.end())
+//		{
+////			cout << "lep" << endl;
+//			reco2d["bkglepphpt_nn"]->Fill(ph->Pt(), ph->showermva(), weight);
+//			reco2d["bkglepphpt_iso"]->Fill(ph->Pt(), ph->CorPFIsolation(), weight);
+//			reco2d["bkgleppheta_nn"]->Fill(ph->Eta(), ph->showermva(), weight);
+//			reco2d["bkgleppheta_iso"]->Fill(ph->Eta(), ph->CorPFIsolation(), weight);
+//		}
+//		else
+//		{
+//			reco2d["bkgphpt_nn"]->Fill(ph->Pt(), ph->showermva(), weight);
+//			reco2d["bkgphpt_iso"]->Fill(ph->Pt(), ph->CorPFIsolation(), weight);
+//			reco2d["bkgpheta_nn"]->Fill(ph->Eta(), ph->showermva(), weight);
+//			reco2d["bkgpheta_iso"]->Fill(ph->Eta(), ph->CorPFIsolation(), weight);
+//		}
+//	}
+
+
 	if(rightper.IsComplete() && cleanedjets.size() == 4)
 	{
 		truth1d["TTRECO"]->Fill(0.5);
@@ -1514,8 +1605,8 @@ void ttbar::ttanalysis(URStreamer& event)
 		if(!rightper.IsWHadCorrect(bestper) && rightper.IsBLepCorrect(bestper)) {truth1d["TTRECO"]->Fill(5.5);}
 		
 	}
-	//if(!BTAGMODE && bestper.MassDiscr() > clikelihoodcut){return;}
-	if(!LHCPS && !BTAGMODE && bestper.Prob() > clikelihoodcut){return;}
+	if(!LHCPS && !BTAGMODE && bestper.MassDiscr() > clikelihoodcut){return;}
+	//if(!LHCPS && !BTAGMODE && bestper.Prob() > clikelihoodcut){return;}
 	if(STUDENT)
 	{
 		num_det = 2;
@@ -1908,6 +1999,7 @@ void ttbar::analyze()
 	int nevent = 0;
 	URStreamer event(tree_);
 	IDElectron::streamer = &event;
+	IDPhoton::streamer = &event;
 	IDMuon::streamer = &event;
 	PDFuncertainty::streamer = &event;
 	while(event.next())
@@ -1937,6 +2029,10 @@ void ttbar::analyze()
 		selectrons.clear();
 		mediumelectrons.clear();
 		looseelectrons.clear();
+		sphotons.clear();
+		mediumphotons.clear();
+
+		ctsweights.reset();
 
 		lep = nullptr;
 		leppdgid = 0;

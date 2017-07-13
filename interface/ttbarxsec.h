@@ -8,6 +8,7 @@
 #include "URDriver.h"
 #include "IDMuon.h"
 #include "IDElectron.h"
+#include "IDPhoton.h"
 #include "IDJet.h"
 #include "IDMet.h"
 #include "GenObject.h"
@@ -23,6 +24,7 @@
 #include "BTagWeight.h"
 #include "BHadronDecayWeights.h"
 #include "LepEffCorrection.h"
+#include "CTSweights.h"
 
 #include <TGraphErrors.h>
 
@@ -32,6 +34,7 @@ class PDFuncertainty;
 class ttbar : public AnalyzerBase
 {
 	friend class TTBarGenPlots;
+    friend class TTBarPlotsBase;
     friend class TTBarPlots;
     friend class TTBarResponse;
     friend class BTagWeight;
@@ -81,6 +84,8 @@ class ttbar : public AnalyzerBase
 		list<IDElectron> selectrons;
 		vector<IDElectron*> looseelectrons;
 		vector<IDElectron*> mediumelectrons;
+		list<IDPhoton> sphotons;
+		vector<IDPhoton*> mediumphotons;
 		IDMet met;
 
 		TLorentzVector* lep = nullptr;
@@ -236,6 +241,8 @@ class ttbar : public AnalyzerBase
 		TH1D* puhist;
 		LepEffCorrection mucorrector;
 		LepEffCorrection elcorrector;
+
+		CTSweights ctsweights;
 
 		bool STUDENT = false;
 		TFile* stud_tf = nullptr;

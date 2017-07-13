@@ -66,6 +66,25 @@ void TTBarPlotsBase::Init(ttbar* analysis)
 	plot1d.AddHist("dbeta", 200, 0, 2., "#Delta#beta", "Events");
 	plot1d.AddHist("dymp", 200, -4., 4., "y(t)-y(#bar{t})", "Events");
 	plot1d.AddHist("dy", 200, -2., 2., "|y(t)|-|y(#bar{t})|", "Events");
+    plot2d.AddHist("ttm_dy_all", 100, 0., 4000., 100, -2., 2., "ttm", "dy");
+    plot2d.AddHist("ttm_dy_0jet", 100, 0., 4000., 100, -2., 2., "ttm", "dy");
+    plot2d.AddHist("ttm_cts_all", 100, 0., 4000., 100, -1., 1., "ttm", "cts");
+    plot2d.AddHist("ttm_cts_0jet", 100, 0., 4000., 100, -1., 1., "ttm", "cts");
+	bool ctssignal;
+	//size_t ctssize = an->ctsweights.weights(ctssignal).size();
+	size_t ctssize = 40;
+	plot1d.AddHist("cts_sig", ctssize, -1, 1, "cts", "Events");
+	plot2d.AddHist("cts_ttm_sig", ctssize, -1, 1, 100, 0, 4000,  "cts", "ttm");
+	plot2d.AddHist("cts_tty_sig", ctssize, -1, 1, 25, 0, 2.5,  "cts", "tty");
+	plot1d.AddHist("cts", ctssize, -1, 1, "cts", "Events");
+	plot2d.AddHist("cts_ttm", ctssize, -1, 1, 100, 0, 4000,  "cts", "ttm");
+	plot2d.AddHist("cts_tty", ctssize, -1, 1, 25, 0, 2.5,  "cts", "tty");
+	for(size_t i = 0 ; i <= ctssize ; ++i)
+	{
+		plot1d.AddHist("cts_"+to_string(i), ctssize, -1, 1, "cts", "Events");
+		plot2d.AddHist("cts_ttm_"+to_string(i), ctssize, -1, 1, 100, 0, 4000,  "cts", "ttm");
+		plot2d.AddHist("cts_tty_"+to_string(i), ctssize, -1, 1, 25, 0, 2.5,  "cts", "tty");
+	}
 }
 
 //void TTBarPlotsBase::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* Hwb, TLorentzVector* Lb, TLorentzVector* Ll, TLorentzVector* Ln, int lepcharge, double weight)
@@ -114,7 +133,7 @@ void TTBarPlotsBase::Fill(Permutation& per, double weight)
 	plot1d["whad_pt"]->Fill(per.WHad().Pt(), weight);
 	plot1d["wj_dphi"]->Fill(per.WJa()->DeltaPhi(*per.WJb()), weight);
 	plot1d["wj_dr"]->Fill(per.WJa()->DeltaR(*per.WJb()), weight);
-	plot1d["costhetastar"]->Fill(per.T_CMS().CosTheta(), weight);
+	plot1d["costhetastar"]->Fill(per.CTS(), weight);
 	plot1d["bjet_pt"]->Fill(per.BHad()->Pt(), weight);
 	plot1d["bjet_pt"]->Fill(per.BLep()->Pt(), weight);
 	plot1d["bjet_eta"]->Fill(per.BHad()->Eta(), weight);
@@ -130,6 +149,29 @@ void TTBarPlotsBase::Fill(Permutation& per, double weight)
 	plot1d["dbeta"]->Fill((per.THad().BoostVector() - per.TLep().BoostVector()).Mag(), weight);
 	plot1d["dymp"]->Fill(per.T().Rapidity()-per.Tb().Rapidity(), weight);
 	plot1d["dy"]->Fill(Abs(per.T().Rapidity())-Abs(per.Tb().Rapidity()), weight);
-
+	plot2d["ttm_dy_all"]->Fill(per.TT().M(), Abs(per.T().Rapidity())-Abs(per.Tb().Rapidity()), weight);
+	plot2d["ttm_cts_all"]->Fill(per.TT().M(), per.CTS(), weight);
+	if(per.NAddJets() == 0)
+	{
+		plot2d["ttm_dy_0jet"]->Fill(per.TT().M(), Abs(per.T().Rapidity())-Abs(per.Tb().Rapidity()), weight);
+		plot2d["ttm_cts_0jet"]->Fill(per.TT().M(), per.CTS(), weight);
+	}
+	bool ctssignal;
+	const vector<double>& ctsweights = an->ctsweights.weights(ctssignal);
+	if(ctssignal)
+	{
+		plot1d["cts_sig"]->Fill(per.CTS(), weight);
+		plot2d["cts_ttm_sig"]->Fill(per.CTS(), per.TT().M(), weight);
+		plot2d["cts_tty_sig"]->Fill(per.CTS(), abs(per.TT().Rapidity()), weight);
+		for(size_t i = 0 ; i < ctsweights.size() ; ++i)
+		{
+			plot1d["cts_"+to_string(i)]->Fill(per.CTS(), weight*ctsweights[i]);
+			plot2d["cts_ttm_"+to_string(i)]->Fill(per.CTS(), per.TT().M(), weight*ctsweights[i]);
+			plot2d["cts_tty_"+to_string(i)]->Fill(per.CTS(), abs(per.TT().Rapidity()), weight*ctsweights[i]);
+		}
+	}
+	plot1d["cts"]->Fill(per.CTS(), weight);
+	plot2d["cts_ttm"]->Fill(per.CTS(), per.TT().M(), weight);
+	plot2d["cts_tty"]->Fill(per.CTS(), abs(per.TT().Rapidity()), weight);
 }
 
