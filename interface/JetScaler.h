@@ -23,13 +23,12 @@ class JetScaler
 {
 	private:
 		ttbar* AN = nullptr;
-		TH1D* Heta = nullptr;
-		vector<TH1D*> HptsP;
-		vector<TH1D*> HptsM;
 		vector<TH1D*> HptsPqcd;
 		vector<TH1D*> HptsMqcd;
+		TH1D* Hetaqcd = nullptr;
 		vector<TH1D*> HptsPb;
 		vector<TH1D*> HptsMb;
+		TH1D* Hetab = nullptr;
 		TFile* tf = nullptr;
 		TGraph* hlE =nullptr;
 		TGraph* hlB =nullptr;
@@ -44,7 +43,7 @@ class JetScaler
 
 		void InitResolution(const string& resolutionfile, const string& sffile);
 
-		void Init(const string& filename, const string& type);
+		void Init(const string& filename, const string& type, bool bjet);
 
 		double GetRes(const IDJet& jet, double rho, double sigmares = 0.);
 		double GetScale(const IDJet& jet, double sigmascale = 0.);

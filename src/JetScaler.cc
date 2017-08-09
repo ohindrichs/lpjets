@@ -33,7 +33,7 @@ void JetScaler::InitMCrescale(ttbar* an, const string rescalefilename)
 	if(an->cbfrag == 1){mcname = "bfragup";}
 	if(an->cbdecay == -1){mcname = "bdecaydown";}
 	if(an->cbdecay == 1){mcname = "bdecayup";}
-	if(mcname != "")
+	if(an->cmcspecificcorrections && mcname != "")
 	{
 		TDirectory* dir = gDirectory;
 		tf = TFile::Open(rescalefilename.c_str());
@@ -46,16 +46,16 @@ void JetScaler::InitMCrescale(ttbar* an, const string rescalefilename)
 
 }
 
-void JetScaler::Init(const string& filename, const string& type)
+void JetScaler::Init(const string& filename, const string& type, bool bjets)
 {	
-	vector<TH1D*>* ErrP = &HptsP;
-	vector<TH1D*>* ErrM = &HptsM;
-	if(type == "FlavorQCD")
+	vector<TH1D*>* ErrP = nullptr;
+	vector<TH1D*>* ErrM = nullptr;
+	if(!bjets)
 	{
 		ErrP = &HptsPqcd;
 		ErrM = &HptsMqcd;
 	}
-	if(type == "FlavorPureBottom")
+	else
 	{
 		ErrP = &HptsPb;
 		ErrM = &HptsMb;
@@ -104,7 +104,7 @@ void JetScaler::Init(const string& filename, const string& type)
 				//cout << p << " " << pts.back() << " " << errm.back() << " " << errp.back() << endl;
 			}
 			stringstream name;
-			name << "jeterror_" << type << "_" << selected-2; 
+			name << "jeterror_b"<< bjets << "_" << type << "_" << selected-2; 
 			ErrM->push_back(new TH1D((name.str()+"M").c_str(), (name.str()+"M").c_str(), pts.size()-1, pts.data()));
 			ErrP->push_back(new TH1D((name.str()+"P").c_str(), (name.str()+"P").c_str(), pts.size()-1, pts.data()));
 			for(size_t b = 0 ; b < pts.size()-1 ; ++b)
@@ -114,7 +114,8 @@ void JetScaler::Init(const string& filename, const string& type)
 			}
 		}
 	}
-	Heta = new TH1D(("etabins_"+type).c_str(), ("etabins_"+type).c_str(), etabins.size()-1, etabins.data());
+	if(bjets) Hetab = new TH1D(("etabins_"+type+"_b").c_str(), ("etabins_"+type).c_str(), etabins.size()-1, etabins.data());
+	if(!bjets) Hetaqcd = new TH1D(("etabins_"+type+"_qcd").c_str(), ("etabins_"+type).c_str(), etabins.size()-1, etabins.data());
 	if(etabins.size() == 0)
 	{
 		cerr << "ERROR - Jetscaler.Init: Could not find " << type << " in file " << filename << endl;
@@ -244,20 +245,40 @@ double JetScaler::GetScale(const IDJet& jet, double sigmascale)
 				mccorr = hlE->Eval(jet.Pt());	
 			}
 		}
-		sf += mccorr;
+		sf *= mccorr;
 	}
-
-	int etabin = Heta->FindFixBin(jet.Eta()) -1;
-	int ptbin = HptsP[etabin]->FindFixBin(jet.Pt());
-	if(sigmascale >= 0)
+	int etabin = -1;
+	int ptbin = -1;
+	if(BJET)
 	{
-		if(BJET) return(sf + sigmascale*sqrt(pow(HptsP[etabin]->GetBinContent(ptbin), 2) + pow(HptsPb[etabin]->GetBinContent(ptbin), 2)));
-		return(sf + sigmascale*sqrt(pow(HptsP[etabin]->GetBinContent(ptbin), 2) + pow(HptsPqcd[etabin]->GetBinContent(ptbin), 2)));
+		etabin = Hetab->FindFixBin(jet.Eta()) -1;
+		ptbin = HptsPb[etabin]->FindFixBin(jet.Pt());
 	}
 	else
 	{
-		if(BJET) return(sf + sigmascale*sqrt(pow(HptsM[etabin]->GetBinContent(ptbin), 2) + pow(HptsMb[etabin]->GetBinContent(ptbin), 2)));
-		return(sf + sigmascale*sqrt(pow(HptsM[etabin]->GetBinContent(ptbin), 2) + pow(HptsMqcd[etabin]->GetBinContent(ptbin), 2)));
+		etabin = Hetaqcd->FindFixBin(jet.Eta()) -1;
+		ptbin = HptsPqcd[etabin]->FindFixBin(jet.Pt());
+	}
+//	if(sigmascale >= 0)
+//	{
+//		if(BJET) return(sf + sigmascale*sqrt(pow(HptsP[etabin]->GetBinContent(ptbin), 2) + pow(HptsPb[etabin]->GetBinContent(ptbin), 2)));
+//		return(sf + sigmascale*sqrt(pow(HptsP[etabin]->GetBinContent(ptbin), 2) + pow(HptsPqcd[etabin]->GetBinContent(ptbin), 2)));
+//	}
+//	else
+//	{
+//		if(BJET) return(sf + sigmascale*sqrt(pow(HptsM[etabin]->GetBinContent(ptbin), 2) + pow(HptsMb[etabin]->GetBinContent(ptbin), 2)));
+//		return(sf + sigmascale*sqrt(pow(HptsM[etabin]->GetBinContent(ptbin), 2) + pow(HptsMqcd[etabin]->GetBinContent(ptbin), 2)));
+//	}
+
+	if(sigmascale >= 0)
+	{
+		if(BJET) return(sf + sigmascale*HptsPb[etabin]->GetBinContent(ptbin));
+		return(sf + sigmascale*HptsPqcd[etabin]->GetBinContent(ptbin));
+	}
+	else
+	{
+		if(BJET) return(sf + sigmascale*HptsMb[etabin]->GetBinContent(ptbin));
+		return(sf + sigmascale*HptsMqcd[etabin]->GetBinContent(ptbin));
 	}
 }
 

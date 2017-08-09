@@ -70,6 +70,9 @@ void TTBarPlotsBase::Init(ttbar* analysis)
     plot2d.AddHist("ttm_dy_0jet", 100, 0., 4000., 100, -2., 2., "ttm", "dy");
     plot2d.AddHist("ttm_cts_all", 100, 0., 4000., 100, -1., 1., "ttm", "cts");
     plot2d.AddHist("ttm_cts_0jet", 100, 0., 4000., 100, -1., 1., "ttm", "cts");
+	plot2d.AddHist("jets_deta_dphi", 50, 0, 5, 50, 0, Pi(), "#Delta#eta", "#Delta#phi");
+	plot2d.AddHist("jets_detamax_dphi", 50, 0, 5, 50, 0, Pi(), "#Delta#eta", "#Delta#phi");
+	plot2d.AddHist("jets2_deta_dphi", 50, 0, 5, 50, 0, Pi(), "#Delta#eta", "#Delta#phi");
 	bool ctssignal;
 	//size_t ctssize = an->ctsweights.weights(ctssignal).size();
 	size_t ctssize = 40;
@@ -173,5 +176,25 @@ void TTBarPlotsBase::Fill(Permutation& per, double weight)
 	plot1d["cts"]->Fill(per.CTS(), weight);
 	plot2d["cts_ttm"]->Fill(per.CTS(), per.TT().M(), weight);
 	plot2d["cts_tty"]->Fill(per.CTS(), abs(per.TT().Rapidity()), weight);
+
+	double deltaetamax = -1;
+	double deltaphimax = -1;
+	for(size_t i = 4 ; i < per.NJets() ; ++i)
+	{
+		const TLorentzVector* jeti = per.GetJet(i);
+		for(size_t j = i+1 ; j < per.NJets() ; ++j)
+		{
+			const TLorentzVector* jetj = per.GetJet(j);
+			double deltaeta = abs(jeti->Eta() - jetj->Eta());
+			double deltaphi = abs(jeti->DeltaPhi(*jetj));
+			plot2d["jets_deta_dphi"]->Fill(deltaeta, deltaphi, weight);		
+			if(per.NAddJets() == 2){plot2d["jets2_deta_dphi"]->Fill(deltaeta, deltaphi, weight);}
+			if(deltaeta > deltaetamax) {deltaetamax = deltaeta; deltaphimax = deltaphi;}
+
+		}
+	}
+	plot2d["jets_detamax_dphi"]->Fill(deltaetamax, deltaphimax, weight);		
+
+
 }
 

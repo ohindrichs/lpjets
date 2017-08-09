@@ -154,6 +154,7 @@ class ttbar : public AnalyzerBase
 		double B_LOOSE;
 		string cnbtag;
 		size_t cnusedjets;
+		bool cmcspecificcorrections;
 		double clikelihoodcut;
 		double cwjetptsoft;
 		double cwjetpthard;
@@ -173,7 +174,8 @@ class ttbar : public AnalyzerBase
 		double csigmajet;
 		double csigmajetwj;
 		double cscalejetwj;
-		string cjecuncertainty;
+		string cjecuncertaintyb;
+		string cjecuncertaintyqcd;
 		string cBTaggingSF;
 		string cBTaggingEff;
 		int cjetres;

@@ -35,6 +35,7 @@ class Permutation
 		int lpdgid_ = 0;
 		TLorentzVector* met_ = 0;
 		bool calculated = false;
+		bool directtop_ = false;
 		TLorentzVector nu_;
 		TLorentzVector whad_;
 		TLorentzVector wlep_;
@@ -49,6 +50,12 @@ class Permutation
 		vector<TLorentzVector*> addjets;
 		
 	public:
+		void SetDirectTops(const TLorentzVector& thad, const TLorentzVector& tlep)
+		{
+			directtop_ = true;
+			thad_ = thad;
+			tlep_ = tlep;
+		}
 		void SetImproved(bool improved)
 		{
 			if(improved && improvedobjects.size() == 6)
@@ -115,17 +122,17 @@ class Permutation
 				calculated = true;
 				whad_ = *WJa() + *WJb();
 				wlep_ = *L() + Nu();
-				thad_ = whad_ + *BHad();
-				tlep_ = wlep_ + *BLep();
+				if(!directtop_)
+				{
+					thad_ = whad_ + *BHad();
+					tlep_ = wlep_ + *BLep();
+				}
 				tt_ = thad_ + tlep_;
 				t_cms_ = T();
 				tb_cms_ = Tb();
 				t_cms_.Boost(-1.*TT().BoostVector());
 				tb_cms_.Boost(-1.*TT().BoostVector());
 				cts_ = TT().Vect().Dot(t_cms_.Vect())/TT().P()/t_cms_.P(); 
-				//t_cms_.Boost(0., 0, -1.*TT().Pz());
-				//tb_cms_.Boost(0., 0, -1.*TT().Pz());
-				//cout << TT().M() << " " << (t_cms_+tb_cms_).P() << " CMS " << t_cms_.CosTheta() << " " << TT().Vect().Dot(t_cms_.Vect())/TT().P()/t_cms_.P() << " " << tb_cms_.Theta() << endl;
 			}
 		}
 

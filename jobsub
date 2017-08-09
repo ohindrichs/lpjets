@@ -43,7 +43,7 @@ exe = p.stdout.read().split('\n')[0]
 cpcomm = 'cp ' + exe + ' ' + jobdir
 os.system(cpcomm)
 exe = os.path.join(jobdir, os.path.basename(exe))
-print exe, execonfig
+#print exe, execonfig
 
 files = os.listdir(inputdir)
 
@@ -70,7 +70,7 @@ for sf in samplefiles:
 		if configs['PDFTEST'] == '1' and 'tt_PowhegP8' in sf:
 			filesperjob = 10
 		else:
-			filesperjob = 30
+			filesperjob = 60
 	else:
 		filesperjob = 60
 

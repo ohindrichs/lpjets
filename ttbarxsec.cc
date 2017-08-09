@@ -83,6 +83,9 @@ ttbar::ttbar(const std::string output_filename):
 	csigmajet(0.),
 	cjetres(0),
 	csigmamet(0.),
+	ctopptweight(0.),
+	ctoprapweight(0.),
+	cttptweight(0.),
 	crenscale(0),
 	cfacscale(0),
 	chdamp(0),
@@ -137,7 +140,8 @@ ttbar::ttbar(const std::string output_filename):
 	csigmajet = CP.Get<double>("sigmajet");
 	csigmajetwj = CP.Get<double>("sigmajetwj");
 	cscalejetwj = CP.Get<double>("scalejetwj");
-	cjecuncertainty = CP.Get<string>("jecuncertainty");
+	cjecuncertaintyb = CP.Get<string>("jecuncertaintyb");
+	cjecuncertaintyqcd = CP.Get<string>("jecuncertaintyqcd");
 	cjetres = CP.Get<int>("jetres");
 	csigmamet = CP.Get<double>("sigmamet");
 	csigmalep = CP.Get<double>("sigmalep");
@@ -162,7 +166,8 @@ ttbar::ttbar(const std::string output_filename):
 
 	cout << output_filename << endl;
 	if(output_filename.find("tt_") == 0){TTMC = true;}
-	if(CP.Get<bool>("mcspecificcorrections"))
+	cmcspecificcorrections = CP.Get<bool>("mcspecificcorrections");
+	if(cmcspecificcorrections)
 	{
 		if(output_filename.find("Hpp") != string::npos){HERWIGPP = true;}
 		if(output_filename.find("P6") != string::npos){PYTHIA6 = true;}
@@ -661,9 +666,8 @@ void ttbar::begin()
 	reco1d.AddHist("genph_type", 10, 0, 10, "type", "");
 	ttp_all.Init(this);
 
-	jetscaler.Init(cJetEnergyUncertainty, cjecuncertainty);
-	jetscaler.Init(cJetEnergyUncertainty, "FlavorPureBottom");
-	jetscaler.Init(cJetEnergyUncertainty, "FlavorQCD");
+	jetscaler.Init(cJetEnergyUncertainty, cjecuncertaintyb, true);
+	jetscaler.Init(cJetEnergyUncertainty, cjecuncertaintyqcd, false);
 	//jetscaler.Init("Spring16_25nsV6_DATA_UncertaintySources_AK4PFchs.txt", cjecuncertainty);
 	jetscaler.InitResolution(cJetResolution, cJetResolutionSF);
 	jetscaler.InitMCrescale(this, "jetrescale.root");
@@ -2152,6 +2156,7 @@ void ttbar::analyze()
 		else
 		{
 			genper = &genallper;
+			genper->SetDirectTops(gentqhad, gentqlep);
 			gent = gentq;
 			gentbar = gentqbar;
 			gentlep = gentqlep;
@@ -2249,9 +2254,11 @@ void ttbar::analyze()
 			ttp_genacc.Fill(*genper, weight);
 			truth1d["counter"]->Fill(2.5, weight);
 		}
-
-		SelectRecoParticles(event);
-
+		//cout << event.filter().Flag_goodVertices() << " " <<  event.filter().Flag_CSCTightHaloFilter() << " " << event.filter().Flag_HBHENoiseFilter() << " " << event.filter().HBHEnew() << endl;
+		//event.filter().Flag_goodVertices() == 1 && event.filter().Flag_CSCTightHaloFilter() == 1 &&
+				  //event.filter().Flag_goodVertices() == 1 && event.filter().Flag_CSCTightHaloFilter() == 1 && event.filter().HBHEnew() == 1 &&
+				   //event.trigger().HLT_IsoMu24_eta2p1() == 1 || (event.trigger().HLT_IsoMu24_eta2p1() == -1 && event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf() == 1)
+				   //
 		if(isDA && Abs(event.trigger().HLT_IsoMu24()) != 1) {cout << "TRIGGER UNDEFINED IsoMu24:" << event.trigger().HLT_IsoMu24() << endl; }
 		if(isDA && Abs(event.trigger().HLT_IsoTkMu24()) != 1) {cout << "TRIGGER UNDEFINED: TKMu24" << event.trigger().HLT_IsoTkMu24() << endl; }
 		if(isDA && Abs(event.trigger().HLT_Ele27_WPTight_Gsf()) != 1) {cout << "TRIGGER UNDEFINED EL:" <<  event.trigger().HLT_Ele27_WPTight_Gsf() << endl; }
@@ -2278,7 +2285,7 @@ void ttbar::analyze()
 		)
 		{
 			//cout << "sel " << event.run << " " << event.lumi << " " << event.evt << " " << -1 << " " << cleanedjets.size() << endl;
-			//SelectRecoParticles(event);
+			SelectRecoParticles(event);
 			ttanalysis(event);
 		}
 

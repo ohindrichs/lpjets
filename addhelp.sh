@@ -1,6 +1,6 @@
 #!/bin/bash
 DIR=JOBS15_parton
-VER=V10
+VER=V11
 WORKDIR=$PWD
 
 EX="central jetm1 jetp1 jetold jetm1sigma jetp1sigma jetresp1 jetresm1 metm1 metp1 lepm1 lepp1 btagdown btagup ltagdown ltagup pileupup pileupdown "
