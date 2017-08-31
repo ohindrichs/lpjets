@@ -1,6 +1,6 @@
 #!/bin/bash
 JOBDIR=JOB15
-TYP=JOBS15_pseudo
+TYP=JOBS15_parton
 VER=V11JECS
 
 cp ttbarxsec.cfg ttbarxsec.tmp
@@ -88,10 +88,14 @@ for SOURCE in $JECSOURCES; do
 ./updateconfig.py sigmajet 1 sigmajetwj 1 jecuncertaintyb ${SOURCE} jecuncertaintyqcd ${SOURCE}
 ./jobsub ${TYP}_jecup${SOURCE}_${VER} ttbarxsec.exe ttbarxsec.cfg
 done
-./updateconfig.py sigmajet -1 sigmajetwj -1 jecuncertaintyb FlavorPureBottom jecuncertaintyqcd FlavorQCD
-./jobsub ${TYP}_jecdownFlavor_${VER} ttbarxsec.exe ttbarxsec.cfg
-./updateconfig.py sigmajet 1 sigmajetwj 1 jecuncertaintyb FlavorPureBottom jecuncertaintyqcd FlavorQCD
-./jobsub ${TYP}_jecupFlavor_${VER} ttbarxsec.exe ttbarxsec.cfg
+./updateconfig.py sigmajet -1 sigmajetwj -1 jecuncertaintyb FlavorPureBottom jecuncertaintyqcd NONE
+./jobsub ${TYP}_jecdownFlavorPureBottom_${VER} ttbarxsec.exe ttbarxsec.cfg
+./updateconfig.py sigmajet 1 sigmajetwj 1 jecuncertaintyb FlavorPureBottom jecuncertaintyqcd NONE
+./jobsub ${TYP}_jecupFlavorPureBottom_${VER} ttbarxsec.exe ttbarxsec.cfg
+./updateconfig.py sigmajet -1 sigmajetwj -1 jecuncertaintyb NONE jecuncertaintyqcd FlavorQCD
+./jobsub ${TYP}_jecdownFlavorQCD_${VER} ttbarxsec.exe ttbarxsec.cfg
+./updateconfig.py sigmajet 1 sigmajetwj 1 jecuncertaintyb NONE jecuncertaintyqcd FlavorQCD
+./jobsub ${TYP}_jecupFlavorQCD_${VER} ttbarxsec.exe ttbarxsec.cfg
 
 #./updateconfig.py sigmajet 1 sigmajetwj 1
 #./jobsub ${TYP}_jetp1_${VER} ttbarxsec.exe ttbarxsec.cfg

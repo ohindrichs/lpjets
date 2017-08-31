@@ -47,7 +47,8 @@ void JetScaler::InitMCrescale(ttbar* an, const string rescalefilename)
 }
 
 void JetScaler::Init(const string& filename, const string& type, bool bjets)
-{	
+{
+	if(type == "NONE") return;	
 	vector<TH1D*>* ErrP = nullptr;
 	vector<TH1D*>* ErrM = nullptr;
 	if(!bjets)
@@ -249,12 +250,12 @@ double JetScaler::GetScale(const IDJet& jet, double sigmascale)
 	}
 	int etabin = -1;
 	int ptbin = -1;
-	if(BJET)
+	if(BJET && Hetab != nullptr)
 	{
 		etabin = Hetab->FindFixBin(jet.Eta()) -1;
 		ptbin = HptsPb[etabin]->FindFixBin(jet.Pt());
 	}
-	else
+	if(!BJET && Hetaqcd != nullptr)
 	{
 		etabin = Hetaqcd->FindFixBin(jet.Eta()) -1;
 		ptbin = HptsPqcd[etabin]->FindFixBin(jet.Pt());
@@ -272,14 +273,15 @@ double JetScaler::GetScale(const IDJet& jet, double sigmascale)
 
 	if(sigmascale >= 0)
 	{
-		if(BJET) return(sf + sigmascale*HptsPb[etabin]->GetBinContent(ptbin));
-		return(sf + sigmascale*HptsPqcd[etabin]->GetBinContent(ptbin));
+		if(BJET  && Hetab != nullptr) return sf + sigmascale*HptsPb[etabin]->GetBinContent(ptbin);
+		if(!BJET  && Hetaqcd != nullptr) return sf + sigmascale*HptsPqcd[etabin]->GetBinContent(ptbin);
 	}
 	else
 	{
-		if(BJET) return(sf + sigmascale*HptsMb[etabin]->GetBinContent(ptbin));
-		return(sf + sigmascale*HptsMqcd[etabin]->GetBinContent(ptbin));
+		if(BJET && Hetab != nullptr) return sf + sigmascale*HptsMb[etabin]->GetBinContent(ptbin);
+		if(!BJET  && Hetaqcd != nullptr) return sf + sigmascale*HptsMqcd[etabin]->GetBinContent(ptbin);
 	}
+	return sf;
 }
 
 

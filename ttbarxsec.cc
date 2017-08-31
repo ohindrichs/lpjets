@@ -293,10 +293,8 @@ void ttbar::begin()
 	truth1d.AddHist("dPzNu_right", 200, -2., 2., "#Deltap_{z}/p_{z}", "Events");
 	truth2d.AddHist("dPzNu_dPhi_right", 200, -2., 2., 100, 0., 3.15, "#Deltap_{z}/p_{z}", "#Delta#Phi(#nu, met)");
 	truth2d.AddHist("dPzNu_chi2_right", 200, -2., 2., 100, 0., 100, "#Deltap_{z}/p_{z}", "#Delta#Phi(#nu, met)");
-	truth2d.AddHist("RES_Mtt_right", 200, -1., 1., 50, 300, 1300 , "#Delta M_{tt}/M_{tt}", "M_{tt} [GeV]");
-	truth2d.AddHist("RES_Mtt_all", 200, -1., 1., 50, 300, 1300 , "#Delta M_{tt}/M_{tt}", "M_{tt} [GeV]");
-	truth2d.AddHist("RES_dbeta_right", 200, -1., 1., 50, 0, 2 , "#Delta (#delta #beta)/#delta #beta", "#delta #beta");
-	truth2d.AddHist("RES_dbeta_all", 200, -1., 1., 50, 0, 2 , "#Delta (#delta #beta)/#delta #beta", "#delta #beta");
+	truth2d.AddHist("RES_Mtt_right", 400, -1., 1., 150, 300, 3300 , "#Delta M_{tt}/M_{tt}", "M_{tt} [GeV]");
+	truth2d.AddHist("RES_Mtt_all", 400, -1., 1., 150, 300, 3300 , "#Delta M_{tt}/M_{tt}", "M_{tt} [GeV]");
 	truth1d.AddHist("dRNuMet_right", 200, 0., 10., "#DeltaR(#nu_{gen}, #nu_{rec})", "Events");
 	truth1d.AddHist("dPtNuMet_right", 200, -2., 2., "#Deltap_{T}/p_{T}", "Events");
 	truth2d.AddHist("Wmasshad_tmasshad_right", 500, 0., 500., 500, 0., 500, "M(t_{h}) [GeV]", "M(W_{h}) [GeV]");
@@ -333,6 +331,15 @@ void ttbar::begin()
 	truth1d.AddHist("Eff_LpassingM", btagpt, "p_{T} [GeV]", "Events");
 	truth1d.AddHist("Eff_LpassingL", btagpt, "p_{T} [GeV]", "Events");
 	truth1d.AddHist("Eff_Lall", btagpt, "p_{T} [GeV]", "Events");
+	truth1d.AddHist("Effcor_BpassingM", btagpt, "p_{T} [GeV]", "Events");
+	truth1d.AddHist("Effcor_BpassingL", btagpt, "p_{T} [GeV]", "Events");
+	truth1d.AddHist("Effcor_Ball", btagpt, "p_{T} [GeV]", "Events");
+	truth1d.AddHist("Effcor_CpassingM", btagpt, "p_{T} [GeV]", "Events");
+	truth1d.AddHist("Effcor_CpassingL", btagpt, "p_{T} [GeV]", "Events");
+	truth1d.AddHist("Effcor_Call", btagpt, "p_{T} [GeV]", "Events");
+	truth1d.AddHist("Effcor_LpassingM", btagpt, "p_{T} [GeV]", "Events");
+	truth1d.AddHist("Effcor_LpassingL", btagpt, "p_{T} [GeV]", "Events");
+	truth1d.AddHist("Effcor_Lall", btagpt, "p_{T} [GeV]", "Events");
 	truth1d.AddHist("Mu", 100, 0, 100, "#mu", "Events");
 	truth1d.AddHist("MuWeighted", 100, 0, 100, "#mu", "Events");
 	truth1d.AddHist("EffL_BpassingM", btagpt, "p_{T} [GeV]", "Events");
@@ -946,7 +953,7 @@ void ttbar::SelectPseudoTop(URStreamer& event)
 		if(pl.pdgId() == 22)
 		{
 			if(Abs(pl.Eta()) > 2.4 || pl.Pt() < 15.) continue;
-			if(pl.isoR3() < 0.25 && !pl.isoR4())
+			if(pl.isoR3() < 0.25)
 			{
 				sgenparticles.push_back(pl);
 				pstphotons.push_back(&(sgenparticles.back()));
@@ -1422,6 +1429,46 @@ void ttbar::ttanalysis(URStreamer& event)
 	}
 	reco1d["bjetmultiW"]->Fill(nbjets, weight);
 
+	for(IDJet* jet : cleanedjets)
+	{
+		if(find_if(genbjets.begin(), genbjets.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.3;}) != genbjets.end())
+		{
+			truth1d["Effcor_Ball"]->Fill(jet->Pt(), weight);
+			if(jet->csvIncl() > B_MEDIUM)
+			{
+				truth1d["Effcor_BpassingM"]->Fill(jet->Pt(), weight);
+			}
+			else if(jet->csvIncl() > B_LOOSE)
+			{
+				truth1d["Effcor_BpassingL"]->Fill(jet->Pt(), weight);
+			}
+		}
+		else if(find_if(gencjets.begin(), gencjets.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.3;}) != gencjets.end())
+		{
+			truth1d["Effcor_Call"]->Fill(jet->Pt(), weight);
+			if(jet->csvIncl() > B_MEDIUM)
+			{
+				truth1d["Effcor_CpassingM"]->Fill(jet->Pt(), weight);
+			}
+			else if(jet->csvIncl() > B_LOOSE)
+			{
+				truth1d["Effcor_CpassingL"]->Fill(jet->Pt(), weight);
+			}
+		}
+		else
+		{
+			truth1d["Effcor_Lall"]->Fill(jet->Pt(), weight);
+			if(jet->csvIncl() > B_MEDIUM)
+			{
+				truth1d["Effcor_LpassingM"]->Fill(jet->Pt(), weight);
+			}
+			else if(jet->csvIncl() > B_LOOSE)
+			{
+				truth1d["Effcor_LpassingL"]->Fill(jet->Pt(), weight);
+			}
+		}
+	}
+
 	if(SEMILEPACC)
 	{
 		truth1d["counter"]->Fill(3.5, weight);
@@ -1762,6 +1809,7 @@ void ttbar::ttanalysis(URStreamer& event)
 				response2dvar.FillTruthReco("jet+jetdrtop", jttruth, genper->DRminTop(gjet), jtrec, bestper.DRminTop(rjet), weight);
 			}
 		}
+		truth2d["RES_Mtt_all"]->Fill((genper->TT().M()-bestper.TT().M())/genper->TT().M(), genper->TT().M(), weight);
 	}
 
 
@@ -1798,12 +1846,9 @@ void ttbar::ttanalysis(URStreamer& event)
 		truth1d["dPzNu_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), weight);
 		truth2d["dPzNu_dPhi_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), Abs(bestper.Nu().DeltaPhi(met)), weight);
 		truth2d["dPzNu_chi2_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), Sqrt(bestper.NuChisq()), weight);
-		truth2d["RES_Mtt_right"]->Fill(((bestper.THad() + bestper.TLep()).M() - (genthad + gentlep).M())/(genthad + gentlep).M(), (genthad + gentlep).M(), weight);
-		truth2d["RES_dbeta_right"]->Fill(((bestper.THad().BoostVector() - bestper.TLep().BoostVector()).Mag() - (genthad.BoostVector() - gentlep.BoostVector()).Mag())/(genthad.BoostVector() - gentlep.BoostVector()).Mag(), (genthad.BoostVector() - gentlep.BoostVector()).Mag(), weight);
+		truth2d["RES_Mtt_right"]->Fill((genper->TT().M()-bestper.TT().M())/genper->TT().M(), genper->TT().M(), weight);
 		truth1d["dRNuMet_right"]->Fill(met.DeltaR(genper->Nu()), weight);
 		truth1d["dPtNuMet_right"]->Fill((met.Pt() - genper->Nu().Pt())/genper->Nu().Pt(), weight);
-		truth2d["RES_Mtt_all"]->Fill((bestper.TT().M() - (gent+gentbar).M())/(gent+gentbar).M(), (gent+gentbar).M(), weight);
-		truth2d["RES_dbeta_all"]->Fill(((bestper.THad().BoostVector() - bestper.TLep().BoostVector()).Mag() - (genthad.BoostVector() - gentlep.BoostVector()).Mag())/(genthad.BoostVector() - gentlep.BoostVector()).Mag(), (genthad.BoostVector() - gentlep.BoostVector()).Mag(), weight);
 	}
 	else if(rightper.IsComplete())
 	{
